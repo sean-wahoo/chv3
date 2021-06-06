@@ -1,0 +1,138 @@
+import React, { useState, createRef } from "react";
+import { useCookies, Cookies } from "react-cookie";
+import { useUserData } from "@utils/context";
+import { useRouter } from "next/router";
+const axios = require("axios").default;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+import Loading from "@utils/loading";
+
+export default function Login(props: any) {
+    console.log(`props: ${JSON.stringify(props)}`);
+    const router = useRouter();
+
+    const usernameOrEmailRef = createRef<HTMLInputElement>();
+    const passwordRef = createRef<HTMLInputElement>();
+    const [cookie, setCookie] = useCookies(["session"]);
+    const [usernameOrEmail, setUsernameOrEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    if (process.browser && props.auth.isAuth) {
+        router.push("/");
+    }
+
+    const usernameOrEmailHandler = (e: React.FormEvent<HTMLInputElement>) => {
+        setUsernameOrEmail(e.currentTarget.value);
+    };
+
+    const passwordHandler = (e: React.FormEvent<HTMLInputElement>) => {
+        setPassword(e.currentTarget.value);
+    };
+
+    const onLoginSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        setUsernameOrEmail(usernameOrEmailRef.current!.value);
+        setPassword(passwordRef.current!.value);
+
+        if (usernameOrEmail.length > 0 && password.length > 0) {
+            axios
+                .post(`${BACKEND_URL}/login`, {
+                    usernameOrEmail,
+                    password,
+                })
+                .then((res: any) => {
+                    console.log(res.data.token);
+                    setCookie("session", res.data.token, {
+                        path: "/",
+                        sameSite: true,
+                    });
+                    router.push("/");
+                })
+                .catch((err: Error) => console.error(err));
+        }
+    };
+
+    return props.auth.isAuth ? (
+        <Loading />
+    ) : (
+        <div className="w-full h-screen bg-white flex flex-row items-center justify-center">
+            <div className="absolute top-0 left-0 w-auto bg-indigo-600 shadow-xl">
+                <svg
+                    width="80"
+                    height="80"
+                    viewBox="0 0 177 100"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M88 32.5C88 42.165 80.165 50 70.5 50H53V32.5C53 22.835 60.835 15 70.5 15C80.165 15 88 22.835 88 32.5Z"
+                        fill="#C7D2FE"
+                    />
+                    <path
+                        d="M88 67.5C88 57.835 95.835 50 105.5 50H123V67.5C123 77.165 115.165 85 105.5 85C95.835 85 88 77.165 88 67.5Z"
+                        fill="#C7D2FE"
+                    />
+                    <path
+                        d="M53 67.5C53 77.165 60.835 85 70.5 85H88V67.5C88 57.835 80.165 50 70.5 50C60.835 50 53 57.835 53 67.5Z"
+                        fill="#C7D2FE"
+                    />
+                    <path
+                        d="M123 32.5C123 22.835 115.165 15 105.5 15H88V32.5C88 42.165 95.835 50 105.5 50C115.165 50 123 42.165 123 32.5Z"
+                        fill="#C7D2FE"
+                    />
+                </svg>
+            </div>
+            <div className="bg-white rounded-lg h-auto items-center justify-center md:justify-evenly flex flex-col 2xl:w-1/5 lg:w-2/5 w-1/2 p-6">
+                <div className="flex flex-col w-full">
+                    <h1 className="font-work-sans text-center 2xl:text-7xl xl:text-6xl lg:text-5xl text-4xl text-indigo-800">
+                        Log in
+                    </h1>
+                    <h4 className="text-indigo-900 opacity-50 font-semibold my-2 text-center">
+                        Welcome back to ConnectHigh!
+                    </h4>
+                </div>
+
+                <form
+                    className="mt-8 flex flex-col h-auto md:w-full"
+                    onSubmit={onLoginSubmit}
+                >
+                    <input
+                        ref={usernameOrEmailRef}
+                        autoComplete="off"
+                        required
+                        name="usernameOrEmail"
+                        type="text"
+                        className="transition focus:outline-none focus:ring-2 focus:ring-indigo-700 my-4 bg-gray-100 p-4 rounded-lg"
+                        placeholder="Email or Username"
+                        onInput={usernameOrEmailHandler}
+                    />
+                    <input
+                        ref={passwordRef}
+                        autoComplete="off"
+                        required
+                        name="password"
+                        type="password"
+                        className="transition focus:outline-none focus:ring-2 focus:ring-indigo-700 my-4 bg-gray-100 p-4 rounded-lg"
+                        placeholder="Password"
+                        onInput={passwordHandler}
+                    />
+                    <button
+                        type="submit"
+                        className="bg-indigo-700 text-gray-50 font-work-sans font-semibold text-3xl py-2 w-auto rounded-lg mt-8 hover:bg-indigo-800 hover:shadow-lg transition"
+                    >
+                        Log in
+                    </button>
+                    <h4 className="text-gray-500 my-2 lg:text-left text-center">
+                        If you don't have an account, you can{" "}
+                        <a
+                            className="text-indigo-400 hover:underline"
+                            href="/register"
+                        >
+                            create one here!
+                        </a>
+                    </h4>
+                </form>
+            </div>
+        </div>
+    );
+}

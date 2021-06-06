@@ -1,0 +1,184 @@
+import { connection } from "@utils/connection";
+import { User, RegisterUser, LoginUser } from "@utils/interfaces";
+
+/* these functions' return object will look like { pass, error }
+ * if there is no error, the field will be null. if there is an error,
+ * it will show the error
+ */
+
+/**
+ * Checks database to see if username is in use
+ * @param email User's email
+ * @returns object stating whether the validation passed and an error message if any
+ */
+export function checkIfEmailIsInUse(email: string) {
+    try {
+        return connection.query(
+            "SELECT email FROM users WHERE email = ?",
+            [email],
+            (error, results: any) => {
+                if (error) throw error;
+                if (results.length > 0)
+                    return {
+                        passed: false,
+                        error: "A user with that email already exists",
+                    };
+                else return { passed: true, error: "null" };
+            }
+        );
+    } catch (error) {
+        console.error;
+    }
+}
+
+/**
+ * Checks database to see if username is in use
+ * @param username - User's username
+ * @returns object stating whether the validation passed and an error message if any
+ */
+export function checkIfUsernameIsInUse(username: string) {
+    try {
+        return connection.query(
+            "SELECT `username` FROM `users` WHERE `username` = ?",
+            [username],
+            (error, results: any) => {
+                if (error) throw error;
+                if (results.length > 0)
+                    return {
+                        passed: false,
+                        error: "A user with that email already exists",
+                    };
+                else return { passed: true, error: "null" };
+            }
+        );
+    } catch (error) {
+        console.error;
+    }
+}
+
+/**
+ * Makes sure that the user's password meets the requirements
+ * @param password - User's password
+ * @returns object stating whether the validation passed and an error message if any
+ */
+function checkThatPasswordMeetsRequirements(password: string) {
+    try {
+        const pattern = new RegExp(
+            "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-zd$@$!%*?&].{8,}"
+        );
+        if (pattern.test(password)) {
+            return { passed: true, error: null };
+        } else {
+            return {
+                passed: false,
+                error: "Password does not meet requirements.",
+            };
+        }
+    } catch (error) {
+        console.error;
+    }
+}
+
+/**
+ * Makes sure that the user's passwords are the same
+ * @param password1 - User's password
+ * @param password2 - User's confirmed password
+ * @returns object stating whether the validation passed and an error message if any
+ */
+function checkThatPasswordsAreTheSame(password1: string, password2: string) {
+    try {
+        if (password1 === password2) return { passed: true, error: null };
+        else return { passed: false, error: "Passwords do not match" };
+    } catch (error) {
+        console.error;
+    }
+}
+
+/**
+ * Makes sure that the user object in the register request is shaped correctly
+ * @param user User object
+ * @returns object stating whether the validation passed and an error message if any
+ */
+function checkThatUserRegisterObjectHasCorrectProperties(user: User) {
+    if ("usernameOrEmail" in user) {
+        return { passed: false, error: "Login Request sent?" };
+    }
+    if (
+        "username" in user &&
+        "email" in user &&
+        "password" in user &&
+        "confirmPassword" in user
+    ) {
+        return { passed: true, error: null };
+    } else {
+        return { passed: false, error: "Malformed request" };
+    }
+}
+
+/**
+ * Makes sure that the user object in the login request is shaped correctly
+ * @param user User object
+ * @returns object stating whether the validation passed and an error message if any
+ */
+function checkThatUserLoginObjectHasCorrectProperties(user: User) {
+    if ("username" in user || "email" in user || "confirmPassword" in user) {
+        return { passed: false, error: "Register Request sent?" };
+    }
+    if ("usernameOrEmail" in user && "password" in user) {
+        return { passed: true, error: null };
+    } else {
+        return { passed: false, error: "Malformed request" };
+    }
+}
+
+/**
+ * Runs checks on user object to make sure user input meets registration requirements
+ * @param user User object
+ * @returns object with number of passes and list of errors if any
+ */
+export function registerValidation(user: RegisterUser) {
+    try {
+        let passes: number = 0;
+        let errors: string[] = [];
+        const check1 = checkThatPasswordMeetsRequirements(user.password);
+        const check2 = checkThatPasswordsAreTheSame(
+            user.password,
+            user.confirmPassword
+        );
+        const check3 = checkThatUserRegisterObjectHasCorrectProperties(user);
+
+        const checks = [check1, check2, check3];
+
+        checks.forEach((check: any) => {
+            if (check.passed) passes++;
+            if (check.error) errors.push(check.error);
+        });
+
+        return { passes, errors };
+    } catch (error) {
+        console.error;
+    }
+}
+
+/**
+ * Runs checks on user object to make sure user input meets login requirements
+ * @param user User object
+ * @returns object with number of passes and list of errors if any
+ */
+export function loginValidation(user: LoginUser) {
+    try {
+        let passes: number = 0;
+        let errors: string[] = [];
+        const check1 = checkThatUserLoginObjectHasCorrectProperties(user);
+        const checks = [check1];
+
+        checks.forEach((check) => {
+            if (check.passed) passes++;
+            if (check.error) errors.push(check.error);
+        });
+
+        return { passes, errors };
+    } catch (error) {
+        console.error;
+    }
+}
