@@ -3,6 +3,11 @@ const axios = require("axios").default;
 
 const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+/**
+ * verifies user token if token is valid
+ * @param token session token or nothing if user has no token
+ * @returns authorized user data or nothing if not authorized
+ */
 export const verifyTokenHoc = async (token: string | undefined) => {
     const cookies = new Cookies();
     try {

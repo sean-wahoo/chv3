@@ -149,22 +149,20 @@ export function loginRoute(req, res) {
     }
 }
 
+/**
+ * Route to verify user token
+ * @param req Request object
+ * @param res Response object
+ * @returns Response status
+ */
 export function verifyAuth(req, res) {
     console.log("verifyAuth");
-    /*
-    IF EVER THE isAuth IS FALSE, ALWAYS SEND TO LOGIN SCREEN
-    WITH REASON FOR FAILURE TO AUTHENTICATE IN THE HEADER (fun error
-    messages in the future)
-
-    TODO: integrate ^ that
-    */
 
     try {
         const SESSION_SECRET = process.env.SESSION_SECRET;
 
         connection.connect();
         const token: string = req.headers.authorization.split("Bearer ")[1];
-        // console.log(req.headers.authorization.split("Bearer "));
         let data: any;
         if ((data = jwt.verify(token, SESSION_SECRET))) {
             connection.query(

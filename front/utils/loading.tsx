@@ -1,3 +1,7 @@
+/**
+ * loading screen to show during api calls or other stuff
+ * @returns loading screen
+ */
 export default function Loading() {
     return (
         <div className="w-full h-screen bg-white flex flex-row items-center justify-center">
