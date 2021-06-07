@@ -12,9 +12,10 @@ export function checkPasswordStrength(password: string) {
 
     let checks = [check1, check2, check3, check4, check5];
 
-    const passes = checks.map((check) => check === true);
+    const passes = checks.filter((check) => check === true);
+    console.log(passes);
 
     if (passes.length < 2) return { message: "Too weak!" };
-    if (passes.length < 4) return { message: "Little better..." };
-    return { message: "Alrighty!" };
+    else if (passes.length < 5) return { message: "Little better..." };
+    else return { message: "Alrighty!" };
 }

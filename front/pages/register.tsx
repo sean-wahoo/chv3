@@ -4,18 +4,21 @@ import Cookies from "universal-cookie";
 import GoogleLogin from "react-google-login";
 import { googleSignInSuccess, googleSignInFailed } from "@utils/auth";
 import { useRouter } from "next/router";
+import { useCookies } from "react-cookie";
+import { checkPasswordStrength } from "@utils/validation";
 
 const axios = require("axios").default;
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-const cookies = new Cookies();
 
 export default function Register(props: any) {
     const router = useRouter();
-
+    const [errors, setErrors] = useState("");
+    const [passwordStrength, setPasswordStrength] = useState({ message: "" });
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [cookie, setCookie] = useCookies(["session"]);
 
     if (process.browser && props.auth.isAuth) {
         router.push("/");
@@ -33,6 +36,8 @@ export default function Register(props: any) {
         setEmail(e.currentTarget.value);
     };
     const passwordHandler = (e: React.FormEvent<HTMLInputElement>) => {
+        const strengthMessage = checkPasswordStrength(e.currentTarget.value);
+        setPasswordStrength(strengthMessage);
         setPassword(e.currentTarget.value);
     };
     const confirmPasswordHandler = (e: React.FormEvent<HTMLInputElement>) => {
@@ -60,10 +65,23 @@ export default function Register(props: any) {
                     confirmPassword,
                 })
                 .then((res: any) => {
-                    cookies.set("session", res.data.token, { path: "/" });
-                    router.push("/");
+                    if (res.data.error) {
+                        const newError: string = res.data.error;
+                        console.log("wow haha");
+                        setErrors(newError);
+                    } else {
+                        setCookie("session", res.data.token, {
+                            path: "/",
+                            sameSite: true,
+                        });
+                    }
                 })
-                .catch(console.error);
+                .catch((err: any) => {
+                    let errorMessage: string;
+                    if ((errorMessage = err.response.data.error))
+                        setErrors(errorMessage);
+                    console.log(err);
+                });
         }
     };
 
@@ -76,6 +94,25 @@ export default function Register(props: any) {
                     <h1 className="font-work-sans text-center 2xl:text-6xl xl:text-5xl text-4xl text-indigo-800">
                         Sign up
                     </h1>
+                    {errors.length > 0 && (
+                        <div className="mx-auto my-4 mb-2 text-sm flex flex-row p-2 rounded-lg bg-red-50 border border-red-400 text-red-400 justify-evenly items-center">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 mr-1 box-content"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                            </svg>
+                            {errors}
+                        </div>
+                    )}
                     <h4 className="text-indigo-900 opacity-50 font-semibold mt-2 text-center">
                         Welcome to ConnectHigh!
                     </h4>
@@ -89,7 +126,7 @@ export default function Register(props: any) {
                         </a>
                     </h4> */}
                 </div>
-
+                {passwordStrength?.message}
                 <form
                     className="mt-4 flex flex-col h-auto md:w-full"
                     onSubmit={onRegisterSubmit}
