@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "ngrok": "ngrok http 3000 -host-header=\"localhost:3000\" -hostname=dev.seanreichel.com"
   },
   "dependencies": {
     "axios": "^0.21.1",
