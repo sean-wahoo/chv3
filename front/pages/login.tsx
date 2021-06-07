@@ -1,9 +1,12 @@
 import React, { useState, createRef } from "react";
-import { useCookies, Cookies } from "react-cookie";
-import { useUserData } from "@utils/context";
+import { useCookies } from "react-cookie";
 import { useRouter } from "next/router";
+import Head from "next/head";
+import GoogleLogin from "react-google-login";
+import { googleSignInSuccess, googleSignInFailed } from "@utils/auth";
 const axios = require("axios").default;
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 import Loading from "@utils/loading";
 
 export default function Login(props: any) {
@@ -52,10 +55,20 @@ export default function Login(props: any) {
         }
     };
 
+    console.log(CLIENT_ID);
+
     return props.auth.isAuth ? (
         <Loading />
     ) : (
-        <div className="w-full h-screen bg-white flex flex-row items-center justify-center">
+        <div className="w-full min-h-screen bg-white flex flex-row items-center justify-center">
+            <Head>
+                <script
+                    src="https://apis.google.com/js/platform.js"
+                    async
+                    defer
+                ></script>
+                <meta name="google-signin-client_id" content={CLIENT_ID}></meta>
+            </Head>
             <div className="absolute top-0 left-0 w-auto bg-indigo-600 shadow-xl">
                 <svg
                     width="80"
@@ -84,16 +97,16 @@ export default function Login(props: any) {
             </div>
             <div className="bg-white rounded-lg h-auto items-center justify-center md:justify-evenly flex flex-col 2xl:w-1/5 lg:w-2/5 w-1/2 p-6">
                 <div className="flex flex-col w-full">
-                    <h1 className="font-work-sans text-center 2xl:text-7xl xl:text-6xl lg:text-5xl text-4xl text-indigo-800">
+                    <h1 className="font-work-sans text-center 2xl:text-6xl xl:text-5xl text-4xl text-indigo-800">
                         Log in
                     </h1>
-                    <h4 className="text-indigo-900 opacity-50 font-semibold my-2 text-center">
+                    <h4 className="text-indigo-900 opacity-50 font-semibold mt-2 text-center">
                         Welcome back to ConnectHigh!
                     </h4>
                 </div>
 
                 <form
-                    className="mt-8 flex flex-col h-auto md:w-full"
+                    className="mt-4 flex flex-col h-auto md:w-full"
                     onSubmit={onLoginSubmit}
                 >
                     <input
@@ -102,7 +115,7 @@ export default function Login(props: any) {
                         required
                         name="usernameOrEmail"
                         type="text"
-                        className="transition focus:outline-none focus:ring-2 focus:ring-indigo-700 my-4 bg-gray-100 p-4 rounded-lg"
+                        className="placeholder-gray-500 transition focus:outline-none focus:ring-2 focus:ring-indigo-700 my-2 bg-gray-200 p-4 rounded-lg"
                         placeholder="Email or Username"
                         onInput={usernameOrEmailHandler}
                     />
@@ -112,16 +125,29 @@ export default function Login(props: any) {
                         required
                         name="password"
                         type="password"
-                        className="transition focus:outline-none focus:ring-2 focus:ring-indigo-700 my-4 bg-gray-100 p-4 rounded-lg"
+                        className="placeholder-gray-500 transition focus:outline-none focus:ring-2 focus:ring-indigo-700 my-2 bg-gray-200 p-4 rounded-lg"
                         placeholder="Password"
                         onInput={passwordHandler}
                     />
                     <button
                         type="submit"
-                        className="bg-indigo-700 text-gray-50 font-work-sans font-semibold text-3xl py-2 w-auto rounded-lg mt-8 hover:bg-indigo-800 hover:shadow-lg transition"
+                        className="bg-indigo-700 text-gray-50 font-work-sans font-semibold text-3xl py-2 w-auto rounded-lg mt-4 mb-2 hover:bg-indigo-800 hover:shadow-lg transition"
                     >
                         Log in
                     </button>
+                    <h6 className="font-work-sans font-bold text-gray-500 text-center 2xl:text-4xl xl:text-3xl text-2xl">
+                        Or
+                    </h6>
+                    <GoogleLogin
+                        clientId={
+                            "170260512759-1eqtqc221on5s0ou2kcu8akln2hlvpr8.apps.googleusercontent.com"
+                        }
+                        className="my-2 border-2 border-indigo-700"
+                        buttonText="Sign In with Google"
+                        onSuccess={googleSignInSuccess}
+                        onFailure={googleSignInFailed}
+                        cookiePolicy={"single_host_origin"}
+                    />
                     <h4 className="text-gray-500 my-2 lg:text-left text-center">
                         If you don't have an account, you can{" "}
                         <a
