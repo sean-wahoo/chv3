@@ -107,7 +107,6 @@ export async function registerRoute(req, res) {
  */
 export function loginRoute(req, res) {
     try {
-        console.log("nice");
         connection.connect();
         if (!req.body) return res.status(401).send({ error: "Empty request" });
         const user = req.body as LoginUser;
@@ -123,13 +122,13 @@ export function loginRoute(req, res) {
             (err, results: any) => {
                 if (err) throw err;
                 if (results.length < 1) {
-                    return res.status(401).send({
-                        error: "User with those credentials doesn't exist!",
+                    return res.status(403).send({
+                        error: "User not found!",
                     });
                 }
                 if (results[0].isGoogle === 1) {
                     return res.status(403).send({
-                        error: "This email is associated with a Google account",
+                        error: "This email already in use!",
                     });
                 }
                 bcrypt.compare(
@@ -152,6 +151,10 @@ export function loginRoute(req, res) {
                                 token,
                                 message: "User logged in successfully!",
                             });
+                        } else {
+                            return res
+                                .status(403)
+                                .send({ error: "Incorrect password!" });
                         }
                     }
                 );
@@ -236,9 +239,10 @@ export function googleSignIn(req, res) {
                 if (results.length > 0) {
                     if (results[0].isGoogle === 0 && results[0].email !== "") {
                         return res.status(403).send({
-                            error: "This email is already in use with something other than Google!",
+                            error: "Email already in use!",
                         });
                     }
+                    googleUser.id = results[0].id;
                     const token = createSessionToken(googleUser);
                     return res.send({
                         user: {
