@@ -1,6 +1,6 @@
 import express = require("express");
 import ip = require('ip')
-import { registerRoute, loginRoute, verifyAuth } from "@routes/auth";
+import { registerRoute, loginRoute, verifyAuth, googleSignIn } from "@routes/auth";
 import * as dotenv from "dotenv";
 import cors = require("cors");
 
@@ -31,6 +31,7 @@ app.use(cors(options))
 app.post("/register", registerRoute);
 app.post("/login", loginRoute);
 app.get("/verifyAuth", verifyAuth);
+app.post("/googleSignIn", googleSignIn)
 
 app.listen(port, () => {
     console.log(`⚡️⚡️⚡️ backend server is up on ${address}:${port}!`);
