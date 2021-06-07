@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "ngrok": "ngrok http 3000 -host-header=\"localhost:3000\" -hostname=dev.seanreichel.com"
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -15,6 +16,7 @@
     "react": "17.0.2",
     "react-cookie": "^4.0.3",
     "react-dom": "17.0.2",
+    "react-google-login": "^5.2.2",
     "universal-cookie": "^4.0.4"
   },
   "devDependencies": {

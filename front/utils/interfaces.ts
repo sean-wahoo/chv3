@@ -4,6 +4,12 @@ export interface User {
     email: string;
 }
 
+export interface GoogleUser {
+    id?: string;
+    username: string;
+    email: string;
+}
+
 export interface RegisterUser extends User {
     username: string;
     email: string;

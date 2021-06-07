@@ -1,4 +1,4 @@
-import { RegisterUser, LoginUser, User } from "@utils/interfaces";
+import { RegisterUser, LoginUser, User, GoogleUser } from "@utils/interfaces";
 import { connection } from "@utils/connection";
 import { registerValidation, loginValidation } from "@utils/validation";
 import { createSessionToken, updateSessionToken } from "@utils/session";
@@ -26,16 +26,22 @@ export async function registerRoute(req, res) {
             return res.status(404).send({ error: validated.errors });
 
         connection.query(
-            "SELECT `username` FROM `users` WHERE `username` = ?",
+            "SELECT username, email, isGoogle FROM users WHERE username = ?",
             [user.username],
             (error, results: any) => {
                 if (error) throw error;
+
+                // if (results[0].length > 0) {
+                //     if (results[0])
+                // }
+
                 if (results.length === 0) {
                     connection.query(
-                        "SELECT email FROM users WHERE email = ?",
+                        "SELECT email, isGoogle FROM users WHERE email = ?",
                         [user.email],
                         (error, results: any) => {
                             if (error) throw error;
+
                             if (results.length === 0) {
                                 bcrypt.hash(
                                     user.password,
@@ -112,12 +118,20 @@ export function loginRoute(req, res) {
             return res.status(404).send({ error: validated.errors });
 
         connection.query(
-            "SELECT id, username, email, password FROM users WHERE username = ? OR email = ?",
+            "SELECT id, username, email, password, isGoogle FROM users WHERE username = ? OR email = ?",
             [user.usernameOrEmail, user.usernameOrEmail],
-            (err, results) => {
+            (err, results: any) => {
                 if (err) throw err;
-                if (results[0].length < 1)
-                    throw new Error("User doesn't exist");
+                if (results.length < 1) {
+                    return res.status(401).send({
+                        error: "User with those credentials doesn't exist!",
+                    });
+                }
+                if (results[0].isGoogle === 1) {
+                    return res.status(403).send({
+                        error: "This email is associated with a Google account",
+                    });
+                }
                 bcrypt.compare(
                     user.password,
                     results[0].password,
@@ -165,11 +179,13 @@ export function verifyAuth(req, res) {
         const token: string = req.headers.authorization.split("Bearer ")[1];
         let data: any;
         if ((data = jwt.verify(token, SESSION_SECRET))) {
+            console.log(data);
             connection.query(
                 "SELECT id, username, email FROM users WHERE id = ?",
                 [data.data.id],
                 (err, results: any) => {
                     if (err) throw err;
+
                     if (results.length > 0) {
                         updateSessionToken(
                             {
@@ -203,6 +219,61 @@ export function verifyAuth(req, res) {
     } catch (error) {
         console.error(error);
         if (error.message === "jwt expired") console.log("it expired");
+        return res.send(error);
+    }
+}
+
+export function googleSignIn(req, res) {
+    try {
+        const googleUser = req.body as GoogleUser;
+
+        connection.connect();
+        connection.query(
+            "SELECT id, email, isGoogle from users WHERE email = ?",
+            [googleUser.email],
+            (err, results: any) => {
+                if (err) throw err;
+                if (results.length > 0) {
+                    if (results[0].isGoogle === 0 && results[0].email !== "") {
+                        return res.status(403).send({
+                            error: "This email is already in use with something other than Google!",
+                        });
+                    }
+                    const token = createSessionToken(googleUser);
+                    return res.send({
+                        user: {
+                            id: results[0].id,
+                            username: results[0].username,
+                            email: results[0].email,
+                        },
+                        token,
+                        message: "User logged in successfully",
+                    });
+                }
+
+                const id = uuidv4();
+                connection.query(
+                    "INSERT INTO users (id, username, email, isGoogle) VALUES (?, ?, ?, ?)",
+                    [id, googleUser.username, googleUser.email, 1],
+                    (err, results) => {
+                        if (err) throw err;
+                        googleUser.id = id;
+                        const token = createSessionToken(googleUser);
+                        return res.send({
+                            user: {
+                                id: id,
+                                username: googleUser.username,
+                                email: googleUser.email,
+                            },
+                            token,
+                            message: "User logged in successfully",
+                        });
+                    }
+                );
+            }
+        );
+    } catch (error) {
+        console.error(error);
         return res.send(error);
     }
 }
