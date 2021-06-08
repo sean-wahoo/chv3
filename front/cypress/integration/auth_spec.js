@@ -58,5 +58,10 @@ describe("Authentication", () => {
                     });
                 });
         });
+        it("Should redirect to /login and destroy the cookie on logout", () => {
+            cy.getCookie("session").should("exist");
+            cy.get("[id=logout]").click();
+            cy.getCookie("session").should("not.exist");
+        });
     });
 });
