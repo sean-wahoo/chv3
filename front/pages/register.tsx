@@ -5,7 +5,12 @@ import GoogleLogin from "react-google-login";
 import { googleSignInSuccess, googleSignInFailed } from "@utils/auth";
 import { useRouter } from "next/router";
 import { useCookies } from "react-cookie";
-import { checkPasswordStrength } from "@utils/validation";
+import {
+    checkThatUsernameIsAllowed,
+    checkThatEmailIsAllowed,
+    checkPasswordStrength,
+    checkConfirmPasswordMatchesPassword,
+} from "@utils/validation";
 
 const axios = require("axios").default;
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -16,6 +21,26 @@ export default function Register(props: any) {
     const [passwordStrength, setPasswordStrength] = useState({ message: "" });
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
+    const [usernameSettings, setUsernameSettings] = useState({
+        focusRing: "",
+        symbol: null,
+        pass: false,
+    });
+    const [emailSettings, setEmailSettings] = useState({
+        focusRing: "",
+        symbol: null,
+        pass: false,
+    });
+    const [passwordSettings, setPasswordSettings] = useState({
+        focusRing: "",
+        symbol: null,
+        pass: false,
+    });
+    const [confirmPasswordSettings, setConfirmPasswordSettings] = useState({
+        focusRing: "",
+        symbol: null,
+        pass: false,
+    });
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [cookie, setCookie] = useCookies(["session"]);
@@ -30,58 +55,156 @@ export default function Register(props: any) {
     const confirmPasswordRef = createRef<HTMLInputElement>();
 
     const usernameHandler = (e: React.FormEvent<HTMLInputElement>) => {
+        const isAllowed = checkThatUsernameIsAllowed(e.currentTarget.value);
+        console.log(isAllowed.message);
+        switch (isAllowed.message) {
+            case "Nice words only!":
+                console.log(e.currentTarget.value);
+                setUsernameSettings({
+                    focusRing: "ring-2 focus:ring-4 ring-red-400",
+                    symbol: null,
+                    pass: isAllowed.pass,
+                });
+                break;
+            case "Not long enough!":
+                console.log(e.currentTarget.value);
+                setUsernameSettings({
+                    focusRing: "ring-2 focus:ring-4 ring-red-400",
+                    symbol: null,
+                    pass: isAllowed.pass,
+                });
+                break;
+            case "That's better!":
+                setUsernameSettings({
+                    focusRing: "ring-2 focus:ring-4 ring-green-400",
+                    symbol: null,
+                    pass: isAllowed.pass,
+                });
+                break;
+        }
         setUsername(e.currentTarget.value);
     };
     const emailHandler = (e: React.FormEvent<HTMLInputElement>) => {
+        const emailAllowed = checkThatEmailIsAllowed(e.currentTarget.value);
+        switch (emailAllowed.message) {
+            case "Correct shape!":
+                setEmailSettings({
+                    focusRing: "ring-2 focus:ring-4 ring-green-400",
+                    symbol: null,
+                    pass: emailAllowed.pass,
+                });
+                break;
+            case "That's not an email!":
+                setEmailSettings({
+                    focusRing: "ring-2 focus:ring-4 ring-red-400",
+                    symbol: null,
+                    pass: emailAllowed.pass,
+                });
+                break;
+        }
         setEmail(e.currentTarget.value);
     };
     const passwordHandler = (e: React.FormEvent<HTMLInputElement>) => {
         const strengthMessage = checkPasswordStrength(e.currentTarget.value);
         setPasswordStrength(strengthMessage);
+        switch (strengthMessage.message) {
+            case "Too weak!":
+                setPasswordSettings({
+                    focusRing: "ring-2 focus:ring-4 ring-red-400",
+                    symbol: null,
+                    pass: strengthMessage.pass,
+                });
+                break;
+            case "Little better...":
+                setPasswordSettings({
+                    focusRing: "ring-2 focus:ring-4 ring-yellow-400",
+                    symbol: null,
+                    pass: strengthMessage.pass,
+                });
+                break;
+            case "Alrighty!":
+                setPasswordSettings({
+                    focusRing: "ring-2 focus:ring-4 ring-green-400",
+                    symbol: null,
+                    pass: strengthMessage.pass,
+                });
+                break;
+        }
         setPassword(e.currentTarget.value);
     };
     const confirmPasswordHandler = (e: React.FormEvent<HTMLInputElement>) => {
+        const matchMessage = checkConfirmPasswordMatchesPassword(
+            password,
+            e.currentTarget.value
+        );
+        switch (matchMessage.message) {
+            case "Matches!":
+                setConfirmPasswordSettings({
+                    focusRing: "ring-2 focus:ring-4 ring-green-400",
+                    symbol: null,
+                    pass: matchMessage.pass,
+                });
+                break;
+            case "Doesn't match!":
+                setConfirmPasswordSettings({
+                    focusRing: "ring-2 focus:ring-4 ring-red-400",
+                    symbol: null,
+                    pass: matchMessage.pass,
+                });
+                break;
+        }
         setConfirmPassword(e.currentTarget.value);
     };
 
     const onRegisterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        setUsername(usernameRef.current!.value);
-        setEmail(emailRef.current!.value);
-        setPassword(passwordRef.current!.value);
-        setConfirmPassword(confirmPasswordRef.current!.value);
         if (
-            username.length > 0 &&
-            email.length > 0 &&
-            password.length > 0 &&
-            confirmPassword.length > 0
+            usernameSettings.pass &&
+            emailSettings.pass &&
+            passwordSettings.pass &&
+            confirmPasswordSettings.pass
         ) {
-            axios
-                .post(`${BACKEND_URL}/register`, {
-                    username,
-                    email,
-                    password,
-                    confirmPassword,
-                })
-                .then((res: any) => {
-                    if (res.data.error) {
-                        const newError: string = res.data.error;
-                        console.log("wow haha");
-                        setErrors(newError);
-                    } else {
-                        setCookie("session", res.data.token, {
-                            path: "/",
-                            sameSite: true,
-                        });
-                    }
-                })
-                .catch((err: any) => {
-                    let errorMessage: string;
-                    if ((errorMessage = err.response.data.error))
-                        setErrors(errorMessage);
-                    console.log(err);
-                });
+            setUsername(usernameRef.current!.value);
+            setEmail(emailRef.current!.value);
+            setPassword(passwordRef.current!.value);
+            setConfirmPassword(confirmPasswordRef.current!.value);
+            if (
+                username.length > 0 &&
+                email.length > 0 &&
+                password.length > 0 &&
+                confirmPassword.length > 0
+            ) {
+                axios
+                    .post(`${BACKEND_URL}/register`, {
+                        username,
+                        email,
+                        password,
+                        confirmPassword,
+                    })
+                    .then((res: any) => {
+                        if (res.data.error) {
+                            const newError: string = res.data.error;
+                            console.log("wow haha");
+                            setErrors(newError);
+                        } else {
+                            setCookie("session", res.data.token, {
+                                path: "/",
+                                sameSite: true,
+                            });
+                            router.push("/");
+                        }
+                    })
+                    .catch((err: any) => {
+                        let errorMessage: string;
+                        if ((errorMessage = err.response.data.error))
+                            setErrors(errorMessage);
+                        console.log(err);
+                    });
+            }
+        } else {
+            console.log("not all passed!");
+            return;
         }
     };
 
@@ -126,7 +249,6 @@ export default function Register(props: any) {
                         </a>
                     </h4> */}
                 </div>
-                {passwordStrength?.message}
                 <form
                     className="mt-4 flex flex-col h-auto md:w-full"
                     onSubmit={onRegisterSubmit}
@@ -137,8 +259,8 @@ export default function Register(props: any) {
                             ref={usernameRef}
                             required
                             type="text"
-                            placeholder="Name"
-                            className="transition focus:outline-none focus:ring-2 focus:ring-indigo-700 my-2 bg-gray-100 p-4 rounded-lg"
+                            placeholder="Username"
+                            className={`transition focus:outline-none focus:ring-2 my-2 bg-gray-100 p-4 rounded-lg ${usernameSettings.focusRing}`}
                             onInput={usernameHandler}
                         />
                         <input
@@ -147,7 +269,7 @@ export default function Register(props: any) {
                             type="email"
                             required
                             placeholder="Email"
-                            className="transition focus:outline-none focus:ring-2 focus:ring-indigo-700 my-2 bg-gray-100 p-4 rounded-lg"
+                            className={`transition focus:outline-none focus:ring-2  my-2 bg-gray-100 p-4 rounded-lg ${emailSettings.focusRing}`}
                             onInput={emailHandler}
                         />
                         <input
@@ -156,7 +278,7 @@ export default function Register(props: any) {
                             type="password"
                             required
                             placeholder="Password"
-                            className="transition focus:outline-none focus:ring-2 focus:ring-indigo-700 my-2 bg-gray-100 p-4 rounded-lg"
+                            className={`transition focus:outline-none focus:ring-2 my-2 bg-gray-100 p-4 rounded-lg ${passwordSettings.focusRing}`}
                             onInput={passwordHandler}
                         />
                         <input
@@ -165,7 +287,7 @@ export default function Register(props: any) {
                             type="password"
                             required
                             placeholder="Password (again)"
-                            className="transition focus:outline-none focus:ring-2 focus:ring-indigo-700 my-2 bg-gray-100 p-4 rounded-lg"
+                            className={`transition focus:outline-none focus:ring-2 my-2 bg-gray-100 p-4 rounded-lg ${confirmPasswordSettings.focusRing}`}
                             onInput={confirmPasswordHandler}
                         />
                         <button
