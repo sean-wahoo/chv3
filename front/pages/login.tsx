@@ -12,7 +12,7 @@ import Loading from "@utils/loading";
 export default function Login(props: any) {
     console.log(`props: ${JSON.stringify(props)}`);
     const router = useRouter();
-
+    const [errors, setErrors] = useState("");
     const usernameOrEmailRef = createRef<HTMLInputElement>();
     const passwordRef = createRef<HTMLInputElement>();
     const [cookie, setCookie] = useCookies(["session"]);
@@ -44,14 +44,26 @@ export default function Login(props: any) {
                     password,
                 })
                 .then((res: any) => {
-                    console.log(res.data.token);
-                    setCookie("session", res.data.token, {
-                        path: "/",
-                        sameSite: true,
-                    });
-                    router.push("/");
+                    if (res.data.error) {
+                        const newError: string = res.data.error;
+                        console.log("wow haha");
+                        setErrors(newError);
+                    } else {
+                        setCookie("session", res.data.token, {
+                            path: "/",
+                            sameSite: true,
+                        });
+                        router.push("/");
+                    }
                 })
-                .catch((err: Error) => console.error(err));
+                .catch((err: any) => {
+                    let errorMessage: string;
+                    if ((errorMessage = err.response.data.error))
+                        setErrors(errorMessage);
+                    // console.log("wait actually here");
+                    // console.log(JSON.stringify(Object.keys(err.response.data)));
+                    // console.log(err.response.data.error);
+                });
         }
     };
 
@@ -100,6 +112,25 @@ export default function Login(props: any) {
                     <h1 className="font-work-sans text-center 2xl:text-6xl xl:text-5xl text-4xl text-indigo-800">
                         Log in
                     </h1>
+                    {errors.length > 0 && (
+                        <div className="mx-auto my-4 mb-2 text-sm flex flex-row p-2 rounded-lg bg-red-50 border border-red-400 text-red-400 justify-evenly items-center">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 mr-1 box-content"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                            </svg>
+                            {errors}
+                        </div>
+                    )}
                     <h4 className="text-indigo-900 opacity-50 font-semibold mt-2 text-center">
                         Welcome back to ConnectHigh!
                     </h4>
