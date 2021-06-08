@@ -2,7 +2,6 @@ import {
     checkThatUsernameIsAllowed,
     checkThatEmailIsAllowed,
     checkPasswordStrength,
-    checkConfirmPasswordMatchesPassword,
 } from "../utils/validation";
 
 type TestValidation = {
@@ -78,7 +77,7 @@ describe("registration", () => {
     });
 
     it("should disallow passwords not being the same", () => {
-        badPasswords.forEach((passwordCombo) => {
+        badPasswordCombos.forEach((passwordCombo) => {
             expect(passwordCombo[0] === passwordCombo[1]).toBe(false);
         });
     });
