@@ -5,6 +5,9 @@ import { createSessionToken, updateSessionToken } from "@utils/session";
 import bcrypt = require("bcrypt");
 import * as jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
+import * as dotenv from "dotenv";
+dotenv.config();
+const SESSION_SECRET: string = process.env.SESSION_SECRET;
 
 /**
  * Route for handling user registration
@@ -222,6 +225,29 @@ export function verifyAuth(req, res) {
         console.error(error);
         if (error.message === "jwt expired") console.log("it expired");
         return res.send(error);
+    }
+}
+
+export function deleteUser(req, res) {
+    try {
+        connection.connect();
+        const token: string = req.headers.authorization.split("Bearer ")[1];
+        const decodedUser: any = jwt.verify(token, SESSION_SECRET);
+
+        const id = decodedUser.id;
+        connection.query(
+            "DELETE FROM users WHERE id = ?",
+            [id],
+            (err, results) => {
+                if (err) throw err;
+                console.log(results);
+                return res
+                    .status(200)
+                    .send({ message: "User successfully deleted" });
+            }
+        );
+    } catch (error) {
+        console.error(error);
     }
 }
 
