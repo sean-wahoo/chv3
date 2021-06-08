@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "ngrok": "ngrok http 3000 -host-header=\"localhost:3000\" -hostname=dev.seanreichel.com",
-    "test": "jest --watchAll --verbose"
+    "test": "jest --watchAll --verbose",
+    "cypress": "cypress open"
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -15,6 +16,7 @@
     "badwords-list": "^1.0.0",
     "cookie": "^0.4.1",
     "cookies": "^0.8.0",
+    "cypress": "^7.5.0",
     "next": "10.2.3",
     "react": "17.0.2",
     "react-cookie": "^4.0.3",
