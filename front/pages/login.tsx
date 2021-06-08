@@ -10,7 +10,6 @@ const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 import Loading from "@utils/loading";
 
 export default function Login(props: any) {
-    console.log(`props: ${JSON.stringify(props)}`);
     const router = useRouter();
     const [errors, setErrors] = useState("");
     const usernameOrEmailRef = createRef<HTMLInputElement>();
@@ -46,7 +45,6 @@ export default function Login(props: any) {
                 .then((res: any) => {
                     if (res.data.error) {
                         const newError: string = res.data.error;
-                        console.log("wow haha");
                         setErrors(newError);
                     } else {
                         setCookie("session", res.data.token, {
@@ -60,14 +58,9 @@ export default function Login(props: any) {
                     let errorMessage: string;
                     if ((errorMessage = err.response.data.error))
                         setErrors(errorMessage);
-                    // console.log("wait actually here");
-                    // console.log(JSON.stringify(Object.keys(err.response.data)));
-                    // console.log(err.response.data.error);
                 });
         }
     };
-
-    console.log(CLIENT_ID);
 
     return props.auth.isAuth ? (
         <Loading />
@@ -113,7 +106,10 @@ export default function Login(props: any) {
                         Log in
                     </h1>
                     {errors.length > 0 && (
-                        <div className="mx-auto my-4 mb-2 text-sm flex flex-row p-2 rounded-lg bg-red-50 border border-red-400 text-red-400 justify-evenly items-center">
+                        <div
+                            id="loginError"
+                            className="mx-auto my-4 mb-2 text-sm flex flex-row p-2 rounded-lg bg-red-50 border border-red-400 text-red-400 justify-evenly items-center"
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="h-6 w-6 mr-1 box-content"
@@ -139,6 +135,7 @@ export default function Login(props: any) {
                 <form
                     className="mt-4 flex flex-col h-auto md:w-full"
                     onSubmit={onLoginSubmit}
+                    id="loginForm"
                 >
                     <input
                         ref={usernameOrEmailRef}
@@ -146,6 +143,7 @@ export default function Login(props: any) {
                         required
                         name="usernameOrEmail"
                         type="text"
+                        id="usernameOrEmail"
                         className="placeholder-gray-500 transition focus:outline-none focus:ring-2 focus:ring-indigo-700 my-2 bg-gray-200 p-4 rounded-lg"
                         placeholder="Email or Username"
                         onInput={usernameOrEmailHandler}
@@ -155,6 +153,7 @@ export default function Login(props: any) {
                         autoComplete="off"
                         required
                         name="password"
+                        id="password"
                         type="password"
                         className="placeholder-gray-500 transition focus:outline-none focus:ring-2 focus:ring-indigo-700 my-2 bg-gray-200 p-4 rounded-lg"
                         placeholder="Password"
@@ -162,6 +161,7 @@ export default function Login(props: any) {
                     />
                     <button
                         type="submit"
+                        id="login"
                         className="bg-indigo-700 text-gray-50 font-work-sans font-semibold text-3xl py-2 w-auto rounded-lg mt-4 mb-2 hover:bg-indigo-800 hover:shadow-lg transition"
                     >
                         Log in
