@@ -17,7 +17,6 @@ export const verifyTokenHoc = async (token: string | undefined) => {
                 { headers: { authorization: `Bearer ${token}` } }
             );
             if (!payload) throw new Error("payload error");
-            console.log(`payload: ${JSON.stringify(payload.data)}`);
             if ("name" in payload && payload.name === "TokenExpiredError") {
                 throw new Error("jwt expired");
             }
@@ -27,7 +26,6 @@ export const verifyTokenHoc = async (token: string | undefined) => {
                     "username" in payload.data.user &&
                     "email" in payload.data.user
                 ) {
-                    console.log("payload success");
                     return payload.data.user;
                 } else {
                     cookies.remove("session");

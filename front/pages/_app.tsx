@@ -5,7 +5,6 @@ import { serverAuth } from "@utils/auth";
 import { CookiesProvider } from "react-cookie";
 
 function MyApp({ Component, pageProps, auth }: any) {
-    console.log(`auth: ${JSON.stringify(auth)}`);
     return (
         <ContextWrapper appFileUserData={{ ...pageProps }}>
             <CookiesProvider>
@@ -28,7 +27,7 @@ MyApp.getInitialProps = async ({ Component, ctx }: any) => {
             pageProps = await Component.getInitialProps(ctx);
         }
     } catch (error) {
-        console.log(error.code);
+        console.log(error);
     } finally {
         return { pageProps, auth };
     }

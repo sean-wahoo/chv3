@@ -182,7 +182,6 @@ export function verifyAuth(req, res) {
         const token: string = req.headers.authorization.split("Bearer ")[1];
         let data: any;
         if ((data = jwt.verify(token, SESSION_SECRET))) {
-            console.log(data);
             connection.query(
                 "SELECT id, username, email FROM users WHERE id = ?",
                 [data.data.id],
