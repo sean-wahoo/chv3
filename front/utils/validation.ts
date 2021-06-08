@@ -1,5 +1,7 @@
 import Filter from "bad-words";
 
+const list = require("badwords-list");
+
 export function checkPasswordStrength(password: string) {
     const specialCharCheck: RegExp = /[!@#$%^&*(),.?":{}|<>]/g;
     const uppercaseCheck: RegExp = /[A-Z]/g;
@@ -33,11 +35,24 @@ export function checkConfirmPasswordMatchesPassword(
 
 export function checkThatUsernameIsAllowed(username: string) {
     if (username.length > 5) {
+        const badWordArray = list.array;
+        const newWords = ["god", "dammit"];
+        badWordArray.push(...newWords);
         const filter = new Filter();
-        filter.addWords("fucki", "fuki");
-        if (filter.isProfane(username))
-            return { message: "Nice words only!", pass: false };
-        else return { message: "That's better!", pass: true };
+        // badWordArray.forEach((word: string) => {
+        //     if (username.includes(word)) {
+        //         verdict = { message: "Nice words only!", pass: false };
+        //         break;
+        //     }
+        // });
+
+        for (let i = 0; i < badWordArray.length; i++) {
+            if (username.includes(badWordArray[i])) {
+                return { message: "Nice words only!", pass: false };
+            }
+        }
+
+        return { message: "That's better!", pass: true };
     } else return { message: "Not long enough!", pass: false };
 }
 
