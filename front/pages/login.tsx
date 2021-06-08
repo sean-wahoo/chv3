@@ -53,9 +53,8 @@ export default function Login(props: any) {
                             path: "/",
                             sameSite: true,
                         });
+                        router.push("/");
                     }
-
-                    router.push("/");
                 })
                 .catch((err: any) => {
                     let errorMessage: string;
