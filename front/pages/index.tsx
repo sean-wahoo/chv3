@@ -18,6 +18,7 @@ export default function Home(props: any) {
             </div>
             <div className="mt-4 bg-white rounded-lg h-auto w-auto p-4">
                 <button
+                    id="logout"
                     onClick={logout}
                     className="font_work_sans_h1 text-5xl text-indigo-900"
                 >
