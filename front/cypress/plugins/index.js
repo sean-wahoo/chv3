@@ -16,7 +16,22 @@
  * @type {Cypress.PluginConfig}
  */
 // eslint-disable-next-line no-unused-vars
+import * as dotenv from "dotenv";
+const { GoogleSocialLogin } = require("cypress-social-logins").plugins;
+
+dotenv.config();
 module.exports = (on, config) => {
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
-}
+    config.env.googleClientId = process.env.GOOGLE_CLIENT_ID;
+    config.env.googleClientSecret = process.env.GOOGLE_SECRET_ID;
+    config.env.googleRefreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+    config.env.googleUsername = process.env.GOOGLE_TEST_ACCOUNT_EMAIL;
+    config.env.googlePassword = process.env.GOOGLE_TEST_ACCOUNT_PASSWORD;
+    config.env.googleLoginUrl = "http://dev.seanreichel.com/login";
+    config.env.googleCookieName = "session";
+
+    on("task", {
+        GoogleSocialLogin: GoogleSocialLogin,
+    });
+
+    return config;
+};
