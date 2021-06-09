@@ -27,31 +27,11 @@ jobs:
             - name: Install front-end packages
               working-directory: ./front
               run: npm install
-              
-            - name: Start front-end
-              working-directory: ./front
-              run: npm run dev
-              continue-on-error: true
-              
+          
             - name: Install back-end packages
               working-directory: ./back
               run: npm install
-              
-            - name: Start back-end
-              working-directory: ./back
-              run: npm run start
-              continue-on-error: true
-              
-            - name: Start ngrok front
-              working-directory: ./front
-              run: npm run ngrok
-              
-              continue-on-error: true
-            - name: Start ngrok back
-              working-directory: ./back
-              run: npm run ngrok
-              
-              continue-on-error: true
+
             - name: Cypress run
               uses: cypress-io/github-action@v2
               with:
