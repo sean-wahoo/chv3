@@ -44,6 +44,6 @@ jobs:
               with:
                   record: true
                   parallel: true
-                  group: "Actions example"
-                env:
+                  group: Actions example
+              env:
                   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
