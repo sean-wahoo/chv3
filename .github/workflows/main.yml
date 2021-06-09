@@ -25,19 +25,19 @@ jobs:
               uses: actions/checkout@v2
             - name: Start front-end
               working-directory: ./front
-              uses: npm run dev
+              run: npm run dev
               continue-on-error: true
             - name: Start back-end
               working-directory: ./back
-              uses: npm run start
+              run: npm run start
               continue-on-error: true
             - name: Start ngrok front
               working-directory: ./front
-              uses: npm run ngrok
+              run: npm run ngrok
               continue-on-error: true
             - name: Start ngrok back
               working-directory: ./back
-              uses: npm run ngrok
+              run: npm run ngrok
               continue-on-error: true
             - name: Cypress run
               uses: cypress-io/github-action@v2
