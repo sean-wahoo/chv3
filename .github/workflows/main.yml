@@ -28,6 +28,9 @@ jobs:
               uses: actions/setup-node@v1
               with:
                   node-version: 12.x
+                  
+            - name: Setup npm package
+              run: npm init -y && npm install
               
             - name: Install front-end packages
               working-directory: ./front
@@ -37,8 +40,7 @@ jobs:
               working-directory: ./back
               run: npm install
 
-            - name: Setup npm package
-              run: npm init -y && npm install
+            
               
             - name: Cypress run
               uses: cypress-io/github-action@v2
