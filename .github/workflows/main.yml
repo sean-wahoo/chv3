@@ -26,20 +26,20 @@ jobs:
               
             - name: Install front-end packages
               working-directory: ./front
-              run: npm run dev
+              run: npm install
               
             - name: Start front-end
               working-directory: ./front
-              run: npm install
+              run: npm run dev
               continue-on-error: true
               
             - name: Install back-end packages
               working-directory: ./back
-              run: npm run dev
+              run: npm install
               
             - name: Start back-end
               working-directory: ./back
-              run: npm install
+              run: npm run start
               continue-on-error: true
               
             - name: Start ngrok front
