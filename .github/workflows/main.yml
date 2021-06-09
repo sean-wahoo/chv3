@@ -2,46 +2,44 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    # Triggers the workflow on push or pull request events but only for the master branch
+    push:
+        branches: [master]
+    pull_request:
+        branches: [master]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
     cypress-run:
         runs-on: ubuntu-latest
-        strategy: 
-          matrix: 
-            machines: [1, 2, 3]
+        strategy:
+            matrix:
+                machines: [1, 2, 3]
         steps:
             - name: Checkout
               uses: actions/checkout@v2
-              
+
             - name: Setup Node
               uses: actions/setup-node@v1
               with:
                   node-version: 12.x
-                  
-            - name: Setup npm package
-              run: npm init -y && npm install && npm install -D cypress
-              
+
+            # - name: Setup npm package
+            #   run: npm init -y && npm install && npm install -D cypress
+
             - name: Install front-end packages
               working-directory: ./front
-              run: npm install
-          
+              run: npm install && npm install -D cypress
+
             - name: Install back-end packages
               working-directory: ./back
               run: npm install
 
-            
-              
             - name: Cypress run
               uses: cypress-io/github-action@v2
               with:
@@ -50,6 +48,6 @@ jobs:
                   record: true
                   parallel: true
                   browser: firefox
-                  
+
               env:
                   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
