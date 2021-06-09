@@ -48,7 +48,7 @@ jobs:
                   config-file: ./front/cypress.json
                   record: true
                   parallel: true
-                  browser: Firefox
+                  browser: firefox
                   
               env:
                   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
