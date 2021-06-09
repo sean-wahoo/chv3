@@ -23,21 +23,34 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v2
-            - name: Start front-end
+              
+            - name: Install front-end packages
               working-directory: ./front
               run: npm run dev
+              
+            - name: Start front-end
+              working-directory: ./front
+              run: npm install
               continue-on-error: true
+              
+            - name: Install back-end packages
+              working-directory: ./back
+              run: npm run dev
+              
             - name: Start back-end
               working-directory: ./back
-              run: npm run start
+              run: npm install
               continue-on-error: true
+              
             - name: Start ngrok front
               working-directory: ./front
               run: npm run ngrok
+              
               continue-on-error: true
             - name: Start ngrok back
               working-directory: ./back
               run: npm run ngrok
+              
               continue-on-error: true
             - name: Cypress run
               uses: cypress-io/github-action@v2
