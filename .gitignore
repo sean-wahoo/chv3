@@ -2,6 +2,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,dotenv
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,react,dotenv
 
+### cypress outputs ###
+front/cypress/screenshots/
+front/cypress/videos/
+
 ### dotenv ###
 .env
 
