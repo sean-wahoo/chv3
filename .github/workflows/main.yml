@@ -32,13 +32,13 @@ jobs:
             # - name: Setup npm package
             #   run: npm init -y && npm install && npm install -D cypress
 
-            - name: Install front-end packages
-              working-directory: ./front
-              run: npm install && npm install -D cypress
+            #- name: Install front-end packages
+              #working-directory: ./front
+              #run: npm install && npm install -D cypress
 
-            - name: Install back-end packages
-              working-directory: ./back
-              run: npm install
+            #- name: Install back-end packages
+              #working-directory: ./back
+              #run: npm install
 
             - name: Cypress run
               uses: cypress-io/github-action@v2
