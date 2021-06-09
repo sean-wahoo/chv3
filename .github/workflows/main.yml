@@ -30,7 +30,7 @@ jobs:
                   node-version: 12.x
                   
             - name: Setup npm package
-              run: npm init -y && npm install
+              run: npm init -y && npm install && npm install -D cypress
               
             - name: Install front-end packages
               working-directory: ./front
@@ -47,6 +47,7 @@ jobs:
               with:
                   record: true
                   parallel: true
-                  group: Actions example
+                  browser: Firefox
+                  
               env:
                   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
