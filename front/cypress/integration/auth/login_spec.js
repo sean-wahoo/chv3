@@ -1,4 +1,8 @@
-describe("Authentication", () => {
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
+describe("Login", () => {
     it("Successfully opens site", () => {
         cy.visit("http://dev.seanreichel.com/");
     });
@@ -66,14 +70,49 @@ describe("Authentication", () => {
             cy.getCookie("session").should("not.exist");
         });
     });
-    describe("Registration failing", () => {
-        it("Should successfully navigate to /register", () => {
-            cy.visit("http://dev.seanreichel.com/register");
-            cy.url().should("eq", "http://dev.seanreichel.com/register");
-            cy.getCookie("session").should("not.exist");
-        });
-        it("Should fail register on empty form", () => {
-            cy.get("[id=register]").click();
-        });
-    });
+    // lots of stinky issues with this one, might just leave it up to fate
+    //
+    // describe("Google Auth", () => {
+    //     it("Should log in Google user", () => {
+    //         // cy.loginByGoogleApi();
+    //         // cy.get(".googleLogin").click();
+    //         // cy.get("[id=identifierId").type(process.env.GOOGLE_TEST_ACCOUNT_EMAIL);
+    //         // cy.get("")
+    //         const username = Cypress.env("googleUsername");
+    //         const password = Cypress.env("googlePassword");
+    //         const loginUrl = Cypress.env("googleLoginUrl");
+    //         const cookieName = Cypress.env("googleCookieName");
+    //         const socialLoginOptions = {
+    //             username,
+    //             password,
+    //             loginUrl,
+    //             headless: false,
+    //             logs: true,
+    //             preLoginSelector: "[id=usernameOrEmail]",
+    //             loginSelector: "[type='button']",
+    //             postLoginSelector: "[id='logout']",
+    //         };
+    //         return cy
+    //             .task("GoogleSocialLogin", socialLoginOptions)
+    //             .then(({ cookies }) => {
+    //                 cy.clearCookies();
+
+    //                 const cookie = cookies
+    //                     .filter((cookie) => cookie.name === cookieName)
+    //                     .pop();
+    //                 if (cookie) {
+    //                     cy.setCookie(cookie.name, cookie.value, {
+    //                         domain: cookie.domain,
+    //                         expiry: cookie.expires,
+    //                         httpOnly: cookie.httpOnly,
+    //                         path: cookie.path,
+    //                         secure: cookie.secure,
+    //                     });
+    //                     Cypress.Cookies.defaults({
+    //                         preserve: cookieName,
+    //                     });
+    //                 }
+    //             });
+    //     });
+    // });
 });
