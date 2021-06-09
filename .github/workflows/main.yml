@@ -45,6 +45,7 @@ jobs:
             - name: Cypress run
               uses: cypress-io/github-action@v2
               with:
+                  working-directory: front
                   config-file: ./front/cypress.json
                   record: true
                   parallel: true
