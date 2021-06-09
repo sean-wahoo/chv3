@@ -173,7 +173,7 @@ export default function Login(props: any) {
                         clientId={
                             "170260512759-1eqtqc221on5s0ou2kcu8akln2hlvpr8.apps.googleusercontent.com"
                         }
-                        className="my-2 border-2 border-indigo-700"
+                        className="googleLogin my-2 border-2 border-indigo-700"
                         buttonText="Sign In with Google"
                         onSuccess={googleSignInSuccess}
                         onFailure={googleSignInFailed}
