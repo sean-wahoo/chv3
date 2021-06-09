@@ -64,7 +64,7 @@ export function checkIfUsernameIsInUse(username: string) {
 function checkThatPasswordMeetsRequirements(password: string) {
     try {
         const pattern = new RegExp(
-            "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-zd$@$!%*?&].{8,}"
+            "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-zd$@$!%*?&].{7,}"
         );
         if (pattern.test(password)) {
             return { passed: true, error: null };
