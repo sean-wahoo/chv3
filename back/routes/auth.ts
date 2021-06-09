@@ -176,8 +176,6 @@ export function loginRoute(req, res) {
  * @returns Response status
  */
 export function verifyAuth(req, res) {
-    console.log("verifyAuth");
-
     try {
         const SESSION_SECRET = process.env.SESSION_SECRET;
 
@@ -232,15 +230,17 @@ export function deleteUser(req, res) {
     try {
         connection.connect();
         const token: string = req.headers.authorization.split("Bearer ")[1];
+
         const decodedUser: any = jwt.verify(token, SESSION_SECRET);
 
-        const id = decodedUser.id;
+        const id = decodedUser.data.id;
+        console.log(decodedUser.data.id);
         connection.query(
             "DELETE FROM users WHERE id = ?",
             [id],
             (err, results) => {
                 if (err) throw err;
-                console.log(results);
+                console.log(id);
                 return res
                     .status(200)
                     .send({ message: "User successfully deleted" });
