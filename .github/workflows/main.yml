@@ -19,41 +19,40 @@ jobs:
             - name: Cache node modules
               uses: actions/cache@v2
               env:
-                cache-name: cache-node-modules
+                  cache-name: cache-node-modules
               with:
-                # npm cache files are stored in `~/.npm` on Linux/macOS
-                path: ~/.npm
-                key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-                restore-keys: |
-                  ${{ runner.os }}-build-${{ env.cache-name }}-
-                  ${{ runner.os }}-build-
-                  ${{ runner.os }}-
+                  # npm cache files are stored in `~/.npm` on Linux/macOS
+                  path: ~/.npm
+                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-build-${{ env.cache-name }}-
+                      ${{ runner.os }}-build-
+                      ${{ runner.os }}-
 
+            - name: Setup Node
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 12.x
 
-        - name: Setup Node
-          uses: actions/setup-node@v1
-          with:
-              node-version: 12.x
+            # - name: Setup npm package
+            #   run: npm init -y && npm install && npm install -D cypress
 
-        # - name: Setup npm package
-        #   run: npm init -y && npm install && npm install -D cypress
+            - name: Install front-end packages
+              working-directory: ./front
+              run: npm install && npm install -D cypress
 
-        - name: Install front-end packages
-          working-directory: ./front
-          run: npm install && npm install -D cypress
+            - name: Install back-end packages
+              working-directory: ./back
+              run: npm install
 
-        - name: Install back-end packages
-          working-directory: ./back
-          run: npm install
+            - name: Cypress run
+              uses: cypress-io/github-action@v2
+              with:
+                  working-directory: front
+                  config-file: cypress.json
+                  record: true
+                  parallel: true
+                  browser: firefox
 
-        - name: Cypress run
-          uses: cypress-io/github-action@v2
-          with:
-              working-directory: front
-              config-file: cypress.json
-              record: true
-              parallel: true
-              browser: firefox
-
-          env:
-              CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+              env:
+                  CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
