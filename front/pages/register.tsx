@@ -204,7 +204,7 @@ export default function Register(props: any) {
             }
         } else {
             console.log("not all passed!");
-            return;
+            return { message: "nothing" };
         }
     };
 
@@ -218,7 +218,10 @@ export default function Register(props: any) {
                         Sign up
                     </h1>
                     {errors.length > 0 && (
-                        <div className="mx-auto my-4 mb-2 text-sm flex flex-row p-2 rounded-lg bg-red-50 border border-red-400 text-red-400 justify-evenly items-center">
+                        <div
+                            id="registerError"
+                            className="mx-auto my-4 mb-2 text-sm flex flex-row p-2 rounded-lg bg-red-50 border border-red-400 text-red-400 justify-evenly items-center"
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="h-6 w-6 mr-1 box-content"
@@ -252,6 +255,7 @@ export default function Register(props: any) {
                 <form
                     className="mt-4 flex flex-col h-auto md:w-full"
                     onSubmit={onRegisterSubmit}
+                    id="registerForm"
                 >
                     <div className="flex flex-col w-full">
                         <input
@@ -259,6 +263,7 @@ export default function Register(props: any) {
                             ref={usernameRef}
                             required
                             type="text"
+                            id="username"
                             placeholder="Username"
                             className={`transition focus:outline-none focus:ring-2 my-2 bg-gray-100 p-4 rounded-lg ${usernameSettings.focusRing}`}
                             onInput={usernameHandler}
@@ -268,6 +273,7 @@ export default function Register(props: any) {
                             ref={emailRef}
                             type="email"
                             required
+                            id="email"
                             placeholder="Email"
                             className={`transition focus:outline-none focus:ring-2  my-2 bg-gray-100 p-4 rounded-lg ${emailSettings.focusRing}`}
                             onInput={emailHandler}
@@ -277,6 +283,7 @@ export default function Register(props: any) {
                             ref={passwordRef}
                             type="password"
                             required
+                            id="password"
                             placeholder="Password"
                             className={`transition focus:outline-none focus:ring-2 my-2 bg-gray-100 p-4 rounded-lg ${passwordSettings.focusRing}`}
                             onInput={passwordHandler}
@@ -286,12 +293,14 @@ export default function Register(props: any) {
                             ref={confirmPasswordRef}
                             type="password"
                             required
+                            id="confirmPassword"
                             placeholder="Password (again)"
                             className={`transition focus:outline-none focus:ring-2 my-2 bg-gray-100 p-4 rounded-lg ${confirmPasswordSettings.focusRing}`}
                             onInput={confirmPasswordHandler}
                         />
                         <button
                             type="submit"
+                            id="register"
                             className="bg-indigo-700 text-gray-50 font-work-sans font-semibold text-3xl py-2 w-auto rounded-lg mt-4 mb-2 hover:bg-indigo-800 hover:shadow-lg transition"
                         >
                             Sign up

@@ -35,7 +35,6 @@ export function updateSessionToken(
     callback: (token?: string, err?: Error) => void
 ) {
     try {
-        console.log("updateSessionToken");
         if (jwt.verify(token, SESSION_SECRET)) {
             connection.connect();
             connection.query(

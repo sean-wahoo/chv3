@@ -17,7 +17,7 @@ export function logout() {
 // export async function clientAuth() {}
 
 /**
- * 
+ *
  * @param token user's session token
  * @returns user data payload or nothing, indicating unauthorized
  */
@@ -31,23 +31,23 @@ export async function serverAuth(token: string) {
 }
 
 export async function googleSignInSuccess(response: any) {
-    console.log(`success: ${JSON.stringify(response.getBasicProfile())}`)
     const profile = response.getBasicProfile();
-    const username = profile.getName()
-    const email = profile.getEmail()
+    const username = profile.getName();
+    const email = profile.getEmail();
     const cookies = new Cookies();
 
-    axios.post(`${BACKEND_URL}/googleSignIn`, { username, email }).then(payload => {
-        cookies.set("session", payload.data.token, {
-            path: "/",
-            sameSite: true,
-        });
-        Router.push("/");
-    }).catch(error => console.error(error))
-    
-
+    axios
+        .post(`${BACKEND_URL}/googleSignIn`, { username, email })
+        .then((payload) => {
+            cookies.set("session", payload.data.token, {
+                path: "/",
+                sameSite: true,
+            });
+            Router.push("/");
+        })
+        .catch((error) => console.error(error));
 }
 
 export async function googleSignInFailed(response: any) {
-    console.log(`failed: ${JSON.stringify(response)}`)
+    console.log(`failed: ${JSON.stringify(response)}`);
 }

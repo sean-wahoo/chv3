@@ -5,6 +5,9 @@ import { createSessionToken, updateSessionToken } from "@utils/session";
 import bcrypt = require("bcrypt");
 import * as jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
+import * as dotenv from "dotenv";
+dotenv.config();
+const SESSION_SECRET: string = process.env.SESSION_SECRET;
 
 /**
  * Route for handling user registration
@@ -173,8 +176,6 @@ export function loginRoute(req, res) {
  * @returns Response status
  */
 export function verifyAuth(req, res) {
-    console.log("verifyAuth");
-
     try {
         const SESSION_SECRET = process.env.SESSION_SECRET;
 
@@ -182,7 +183,6 @@ export function verifyAuth(req, res) {
         const token: string = req.headers.authorization.split("Bearer ")[1];
         let data: any;
         if ((data = jwt.verify(token, SESSION_SECRET))) {
-            console.log(data);
             connection.query(
                 "SELECT id, username, email FROM users WHERE id = ?",
                 [data.data.id],
@@ -223,6 +223,31 @@ export function verifyAuth(req, res) {
         console.error(error);
         if (error.message === "jwt expired") console.log("it expired");
         return res.send(error);
+    }
+}
+
+export function deleteUser(req, res) {
+    try {
+        connection.connect();
+        const token: string = req.headers.authorization.split("Bearer ")[1];
+
+        const decodedUser: any = jwt.verify(token, SESSION_SECRET);
+
+        const id = decodedUser.data.id;
+        console.log(decodedUser.data.id);
+        connection.query(
+            "DELETE FROM users WHERE id = ?",
+            [id],
+            (err, results) => {
+                if (err) throw err;
+                console.log(id);
+                return res
+                    .status(200)
+                    .send({ message: "User successfully deleted" });
+            }
+        );
+    } catch (error) {
+        console.error(error);
     }
 }
 
