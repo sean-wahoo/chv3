@@ -184,7 +184,7 @@ export function verifyAuth(req, res) {
         let data: any;
         if ((data = jwt.verify(token, SESSION_SECRET))) {
             connection.query(
-                "SELECT user_id, username, email FROM users WHERE id = ?",
+                "SELECT user_id, username, email FROM users WHERE user_id = ?",
                 [data.data.user_id],
                 (err, results: any) => {
                     if (err) throw err;
