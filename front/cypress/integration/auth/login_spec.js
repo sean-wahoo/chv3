@@ -58,7 +58,7 @@ describe("Login", () => {
                         expect(response.body).to.have.property("isAuth", true);
                         expect(response.body).to.have.property("token");
                         expect(response.body).to.have.property("user");
-                        expect(response.body.user).to.have.property("id");
+                        expect(response.body.user).to.have.property("user_id");
                         expect(response.body.user).to.have.property("username");
                         expect(response.body.user).to.have.property("email");
                     });
