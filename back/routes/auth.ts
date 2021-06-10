@@ -4,7 +4,7 @@ import { registerValidation, loginValidation } from "@utils/validation";
 import { createSessionToken, updateSessionToken } from "@utils/session";
 import bcrypt = require("bcrypt");
 import * as jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
+import { nanoid } from "nanoid";
 import * as dotenv from "dotenv";
 dotenv.config();
 const SESSION_SECRET: string = process.env.SESSION_SECRET;
@@ -51,7 +51,7 @@ export async function registerRoute(req, res) {
                                     saltRounds,
                                     (err, hash) => {
                                         if (err) throw err;
-                                        const user_id = uuidv4();
+                                        const user_id = nanoid();
                                         connection.query(
                                             "INSERT INTO users (user_id, username, email, password) VALUES (?, ?, ?, ?)",
                                             [
@@ -280,7 +280,7 @@ export function googleSignIn(req, res) {
                     });
                 }
 
-                const user_id = uuidv4();
+                const user_id = nanoid();
                 connection.query(
                     "INSERT INTO users (user_id, username, email, isGoogle) VALUES (?, ?, ?, ?)",
                     [user_id, googleUser.username, googleUser.email, 1],
