@@ -38,7 +38,7 @@ export interface DetailedPost extends Post {
 export interface Comment {
     comment_id?: string;
     user_id: string;
-    post_id: string | null;
+    post_id: string;
     is_reply: boolean;
     reply_id: string | null;
     content: string;
