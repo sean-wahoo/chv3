@@ -38,7 +38,7 @@ export function updateSessionToken(
         if (jwt.verify(token, SESSION_SECRET)) {
             connection.connect();
             connection.query(
-                "SELECT id, username, email FROM users WHERE id = ?",
+                "SELECT user_id, username, email FROM users WHERE user_id = ?",
                 [user.user_id],
                 (err: Error, results: RowDataPacket[]) => {
                     if (err) throw err;
