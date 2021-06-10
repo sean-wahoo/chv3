@@ -27,9 +27,25 @@ export interface Post {
     title: string;
     content: string;
     category: string;
+    created_at?: string;
 }
 
 export interface DetailedPost extends Post {
     num_comments: number;
     num_likes: number;
+}
+
+export interface Comment {
+    comment_id?: string;
+    user_id: string;
+    post_id: string;
+    is_reply: boolean;
+    reply_id: string | null;
+    content: string;
+    created_at?: string;
+}
+
+export interface DetailedComment extends Comment {
+    num_likes: number;
+    num_replies: number;
 }
