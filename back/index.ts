@@ -7,6 +7,8 @@ import {
     googleSignIn,
     deleteUser,
 } from "@routes/auth";
+import { createPost, getPosts } from "@routes/posts";
+import { protectedMiddleware } from "@utils/middleware";
 import * as dotenv from "dotenv";
 import cors = require("cors");
 
@@ -39,6 +41,8 @@ app.post("/login", loginRoute);
 app.get("/verifyAuth", verifyAuth);
 app.post("/googleSignIn", googleSignIn);
 app.delete("/deleteUser", deleteUser);
+app.get("/getPosts", getPosts);
+app.post("/createPost", protectedMiddleware, createPost);
 
 app.listen(port, () => {
     console.log(`⚡️⚡️⚡️ backend server is up on ${address}:${port}!`);

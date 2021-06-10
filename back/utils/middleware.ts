@@ -9,12 +9,13 @@ export function protectedMiddleware(req, res, next) {
         const token: string = req.headers.authorization.split("Bearer ")[1];
         let data;
         if ((data = jwt.verify(token, SESSION_SECRET))) {
-            req.user = data.user;
+            req.user = data.data;
             next();
         } else {
             return res.status(403).send({ error: "jwt failed" });
         }
     } catch (error) {
+        console.log(error);
         return res.status(403).send(error);
     }
 }

@@ -23,7 +23,7 @@ export interface LoginUser extends User {
 }
 
 export interface Post {
-    post_id: string;
+    post_id?: string;
     title: string;
     content: string;
     category: string;
