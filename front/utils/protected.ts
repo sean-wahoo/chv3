@@ -22,7 +22,7 @@ export const verifyTokenHoc = async (token: string | undefined) => {
             }
             if ("user" in payload.data && payload.data.isAuth) {
                 if (
-                    "id" in payload.data.user &&
+                    "user_id" in payload.data.user &&
                     "username" in payload.data.user &&
                     "email" in payload.data.user
                 ) {
