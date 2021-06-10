@@ -11,7 +11,12 @@ import { createPost, getPosts } from "@routes/posts";
 import { protectedMiddleware } from "@utils/middleware";
 import * as dotenv from "dotenv";
 import cors = require("cors");
-import { getCommentsForPost, createComment } from "@routes/comments";
+import {
+    getCommentsForPost,
+    createComment,
+    getCommentsByUser,
+    getRepliesToComment,
+} from "@routes/comments";
 
 const address = ip.address();
 
@@ -46,6 +51,8 @@ app.get("/getPosts", getPosts);
 app.post("/createPost", protectedMiddleware, createPost);
 app.get("/getCommentsForPost", getCommentsForPost);
 app.post("/createComment", protectedMiddleware, createComment);
+app.get("/getCommentsByUser", getCommentsByUser);
+app.get("/getRepliesTocomment", getRepliesToComment);
 
 app.listen(port, () => {
     console.log(`⚡️⚡️⚡️ backend server is up on ${address}:${port}!`);
