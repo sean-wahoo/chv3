@@ -21,3 +21,15 @@ export interface LoginUser extends User {
     usernameOrEmail: string;
     password: string;
 }
+
+export interface Post {
+    post_id?: string;
+    title: string;
+    content: string;
+    category: string;
+}
+
+export interface DetailedPost extends Post {
+    num_comments: number;
+    num_likes: number;
+}
