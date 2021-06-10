@@ -1,11 +1,11 @@
 export interface User {
-    id?: string;
+    user_id?: string;
     username: string;
     email: string;
 }
 
 export interface GoogleUser {
-    id?: string;
+    user_id?: string;
     username: string;
     email: string;
 }

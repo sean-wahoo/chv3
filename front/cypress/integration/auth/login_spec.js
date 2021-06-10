@@ -42,6 +42,7 @@ describe("Login", () => {
             cy.get("[id=usernameOrEmail]").clear().type("sean2");
             cy.get("[id=password]").clear().type("Qwey7676@");
             cy.get("[id=loginForm]").submit();
+            cy.wait(2000);
             cy.url().should("eq", "http://dev.seanreichel.com/");
         });
         it("Should have generated a valid session token on login", () => {
@@ -58,7 +59,7 @@ describe("Login", () => {
                         expect(response.body).to.have.property("isAuth", true);
                         expect(response.body).to.have.property("token");
                         expect(response.body).to.have.property("user");
-                        expect(response.body.user).to.have.property("id");
+                        expect(response.body.user).to.have.property("user_id");
                         expect(response.body.user).to.have.property("username");
                         expect(response.body.user).to.have.property("email");
                     });

@@ -23,6 +23,7 @@ describe("Registration", () => {
             cy.get("[id=password]").type("P@$$w0rd");
             cy.get("[id=confirmPassword]").type("P@$$w0rd");
             cy.get("[id=registerForm]").submit();
+            cy.wait(2000);
             cy.get("[id=registerError]").contains(
                 "That email is already in use!"
             );
@@ -33,6 +34,7 @@ describe("Registration", () => {
             cy.get("[id=password]").type("P@$$w0rd");
             cy.get("[id=confirmPassword]").type("P@$$w0rd");
             cy.get("[id=registerForm]").submit();
+            cy.wait(2000);
             cy.get("[id=registerError]").contains(
                 "That email is already in use!"
             );
@@ -49,6 +51,7 @@ describe("Registration", () => {
             cy.get("[id=password]").type("P@$$w0rd");
             cy.get("[id=confirmPassword]").type("P@$$w0rd");
             cy.get("[id=registerForm]").submit();
+            cy.wait(2000);
             cy.url().should("eq", "http://dev.seanreichel.com/");
             cy.getCookie("session").should("exist");
         });

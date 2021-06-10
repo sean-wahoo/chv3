@@ -51,11 +51,11 @@ export async function registerRoute(req, res) {
                                     saltRounds,
                                     (err, hash) => {
                                         if (err) throw err;
-                                        const id = uuidv4();
+                                        const user_id = uuidv4();
                                         connection.query(
-                                            "INSERT INTO users (id, username, email, password) VALUES (?, ?, ?, ?)",
+                                            "INSERT INTO users (user_id, username, email, password) VALUES (?, ?, ?, ?)",
                                             [
-                                                id,
+                                                user_id,
                                                 user.username,
                                                 user.email,
                                                 hash,
@@ -64,13 +64,13 @@ export async function registerRoute(req, res) {
                                                 if (err) throw err;
                                                 const token =
                                                     createSessionToken({
-                                                        id: id,
+                                                        user_id,
                                                         username: user.username,
                                                         email: user.email,
                                                     });
                                                 return res.status(200).send({
                                                     user: {
-                                                        id: id,
+                                                        user_id,
                                                         username: user.username,
                                                         email: user.email,
                                                     },
@@ -120,7 +120,7 @@ export function loginRoute(req, res) {
             return res.status(404).send({ error: validated.errors });
 
         connection.query(
-            "SELECT id, username, email, password, isGoogle FROM users WHERE username = ? OR email = ?",
+            "SELECT user_id, username, email, password, isGoogle FROM users WHERE username = ? OR email = ?",
             [user.usernameOrEmail, user.usernameOrEmail],
             (err, results: any) => {
                 if (err) throw err;
@@ -141,13 +141,13 @@ export function loginRoute(req, res) {
                         if (err) throw err;
                         if (result === true) {
                             const token = createSessionToken({
-                                id: results[0].id,
+                                user_id: results[0].user_id,
                                 username: results[0].username,
                                 email: results[0].email,
                             });
                             res.status(200).send({
                                 user: {
-                                    id: results[0].id,
+                                    user_id: results[0].user_id,
                                     username: results[0].username,
                                     email: results[0].email,
                                 },
@@ -184,15 +184,15 @@ export function verifyAuth(req, res) {
         let data: any;
         if ((data = jwt.verify(token, SESSION_SECRET))) {
             connection.query(
-                "SELECT id, username, email FROM users WHERE id = ?",
-                [data.data.id],
+                "SELECT user_id, username, email FROM users WHERE user_id = ?",
+                [data.data.user_id],
                 (err, results: any) => {
                     if (err) throw err;
 
                     if (results.length > 0) {
                         updateSessionToken(
                             {
-                                id: results[0].id,
+                                user_id: results[0].user_id,
                                 username: results[0].username,
                                 email: results[0].email,
                             },
@@ -203,7 +203,7 @@ export function verifyAuth(req, res) {
                                     isAuth: true,
                                     token: newToken,
                                     user: {
-                                        id: results[0].id,
+                                        user_id: results[0].user_id,
                                         username: results[0].username,
                                         email: results[0].email,
                                     },
@@ -233,14 +233,14 @@ export function deleteUser(req, res) {
 
         const decodedUser: any = jwt.verify(token, SESSION_SECRET);
 
-        const id = decodedUser.data.id;
-        console.log(decodedUser.data.id);
+        const user_id = decodedUser.data.user_id;
+        console.log(decodedUser.data.user_id);
         connection.query(
-            "DELETE FROM users WHERE id = ?",
-            [id],
+            "DELETE FROM users WHERE user_id = ?",
+            [user_id],
             (err, results) => {
                 if (err) throw err;
-                console.log(id);
+                console.log(user_id);
                 return res
                     .status(200)
                     .send({ message: "User successfully deleted" });
@@ -257,7 +257,7 @@ export function googleSignIn(req, res) {
 
         connection.connect();
         connection.query(
-            "SELECT id, email, isGoogle from users WHERE email = ?",
+            "SELECT user_id, email, isGoogle from users WHERE email = ?",
             [googleUser.email],
             (err, results: any) => {
                 if (err) throw err;
@@ -267,11 +267,11 @@ export function googleSignIn(req, res) {
                             error: "Email already in use!",
                         });
                     }
-                    googleUser.id = results[0].id;
+                    googleUser.user_id = results[0].user_id;
                     const token = createSessionToken(googleUser);
                     return res.send({
                         user: {
-                            id: results[0].id,
+                            user_id: results[0].user_id,
                             username: results[0].username,
                             email: results[0].email,
                         },
@@ -280,17 +280,17 @@ export function googleSignIn(req, res) {
                     });
                 }
 
-                const id = uuidv4();
+                const user_id = uuidv4();
                 connection.query(
-                    "INSERT INTO users (id, username, email, isGoogle) VALUES (?, ?, ?, ?)",
-                    [id, googleUser.username, googleUser.email, 1],
+                    "INSERT INTO users (user_id, username, email, isGoogle) VALUES (?, ?, ?, ?)",
+                    [user_id, googleUser.username, googleUser.email, 1],
                     (err, results) => {
                         if (err) throw err;
-                        googleUser.id = id;
+                        googleUser.user_id = user_id;
                         const token = createSessionToken(googleUser);
                         return res.send({
                             user: {
-                                id: id,
+                                user_id,
                                 username: googleUser.username,
                                 email: googleUser.email,
                             },

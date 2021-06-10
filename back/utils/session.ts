@@ -38,8 +38,8 @@ export function updateSessionToken(
         if (jwt.verify(token, SESSION_SECRET)) {
             connection.connect();
             connection.query(
-                "SELECT id, username, email FROM users WHERE id = ?",
-                [user.id],
+                "SELECT user_id, username, email FROM users WHERE user_id = ?",
+                [user.user_id],
                 (err: Error, results: RowDataPacket[]) => {
                     if (err) throw err;
                     if (results.length < 1) {
@@ -48,7 +48,7 @@ export function updateSessionToken(
                         const token = jwt.sign(
                             {
                                 data: {
-                                    id: results[0].id,
+                                    user_id: results[0].user_id,
                                     username: results[0].email,
                                     email: results[0].email,
                                 },
