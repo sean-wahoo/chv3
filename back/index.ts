@@ -17,6 +17,12 @@ import {
     getCommentsByUser,
     getRepliesToComment,
 } from "@routes/comments";
+import {
+    getUsersLikes,
+    likeComment,
+    likePost,
+    unlikePostOrComment,
+} from "@routes/likes";
 
 const address = ip.address();
 
@@ -52,7 +58,11 @@ app.post("/createPost", protectedMiddleware, createPost);
 app.get("/getCommentsForPost", getCommentsForPost);
 app.post("/createComment", protectedMiddleware, createComment);
 app.get("/getCommentsByUser", getCommentsByUser);
-app.get("/getRepliesTocomment", getRepliesToComment);
+app.get("/getRepliesToComment", getRepliesToComment);
+app.get("/getUsersLikes", getUsersLikes);
+app.get("/likePost", protectedMiddleware, likePost);
+app.get("/likeComment", protectedMiddleware, likeComment);
+app.delete("/unlikePostOrComment", protectedMiddleware, unlikePostOrComment);
 
 app.listen(port, () => {
     console.log(`⚡️⚡️⚡️ backend server is up on ${address}:${port}!`);
