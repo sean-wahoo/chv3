@@ -28,12 +28,16 @@ export async function likePost(req, res) {
         const post_id = req.query.post_id;
         const like_id = nanoid(12);
 
+        if (!post_id || post_id.length === 0) {
+            return res.status(400).send({ error: "Please provide a post id" });
+        }
+
         connection.query(
             "INSERT INTO likes (like_id, user_id, post_id) VALUES (?, ?, ?)",
             [like_id, user_id, post_id],
             (err, results) => {
                 if (err) throw err;
-                return res.send({ message: "Post liked!" });
+                return res.send({ message: `Post ${post_id} liked!` });
             }
         );
     } catch (error) {
@@ -49,12 +53,18 @@ export async function likeComment(req, res) {
         const comment_id = req.query.comment_id;
         const like_id = nanoid(12);
 
+        if (!comment_id || comment_id.length === 0) {
+            return res
+                .status(400)
+                .send({ error: "Please provide a comment id" });
+        }
+
         connection.query(
             "INSERT INTO likes (like_id, user_id, comment_id) VALUES (?, ?, ?)",
             [like_id, user_id, comment_id],
             (err, results) => {
                 if (err) throw err;
-                return res.send(results);
+                return res.send({ message: `Comment ${comment_id} liked!` });
             }
         );
     } catch (error) {
@@ -74,7 +84,9 @@ export async function unlikePostOrComment(req, res) {
             [like_id, user_id],
             (err, results) => {
                 if (err) throw err;
-                return res.send(results);
+                return res.send({
+                    message: `Post or comment with like_id ${like_id} unliked!`,
+                });
             }
         );
     } catch (error) {
