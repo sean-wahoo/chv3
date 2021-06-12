@@ -54,21 +54,30 @@ app.use(express.urlencoded());
 
 app.use(cors(options));
 
+/// AUTH ///
 app.post("/register", registerRoute);
 app.post("/login", loginRoute);
 app.get("/verifyAuth", verifyAuth);
 app.post("/googleSignIn", googleSignIn);
 app.delete("/deleteUser", deleteUser);
+
+/// POSTS ///
 app.get("/getPosts", getPosts);
 app.post("/createPost", protectedMiddleware, createPost);
+
+/// COMMENTS ///
 app.get("/getCommentsForPost", getCommentsForPost);
 app.post("/createComment", protectedMiddleware, createComment);
 app.get("/getCommentsByUser", getCommentsByUser);
 app.get("/getRepliesToComment", getRepliesToComment);
+
+/// LIKES ///
 app.get("/getUsersLikes", getUsersLikes);
 app.get("/likePost", protectedMiddleware, likePost);
 app.get("/likeComment", protectedMiddleware, likeComment);
 app.delete("/unlikePostOrComment", protectedMiddleware, unlikePostOrComment);
+
+/// FRIENDS ///
 app.get("/getUsersFriends", getUsersFriends);
 app.get("/sendFriendRequest", protectedMiddleware, sendFriendRequest);
 app.get("/acceptFriendRequest", protectedMiddleware, acceptFriendRequest);
