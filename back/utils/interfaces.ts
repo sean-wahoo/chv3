@@ -57,3 +57,11 @@ export interface Like {
     comment_id: string | null;
     created_at: string;
 }
+
+export interface Friendship {
+    friendship_id?: string;
+    send_user_id: string;
+    recieve_user_id: string;
+    status: string;
+    created_at?: string;
+}

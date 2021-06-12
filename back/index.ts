@@ -23,6 +23,13 @@ import {
     likePost,
     unlikePostOrComment,
 } from "@routes/likes";
+import {
+    acceptFriendRequest,
+    declineFriendRequest,
+    getUsersFriends,
+    sendFriendRequest,
+    removeFriend,
+} from "@routes/friends";
 
 const address = ip.address();
 
@@ -47,7 +54,6 @@ app.use(express.urlencoded());
 
 app.use(cors(options));
 
-// app.options("*", cors(options))
 app.post("/register", registerRoute);
 app.post("/login", loginRoute);
 app.get("/verifyAuth", verifyAuth);
@@ -63,6 +69,11 @@ app.get("/getUsersLikes", getUsersLikes);
 app.get("/likePost", protectedMiddleware, likePost);
 app.get("/likeComment", protectedMiddleware, likeComment);
 app.delete("/unlikePostOrComment", protectedMiddleware, unlikePostOrComment);
+app.get("/getUsersFriends", getUsersFriends);
+app.get("/sendFriendRequest", protectedMiddleware, sendFriendRequest);
+app.get("/acceptFriendRequest", protectedMiddleware, acceptFriendRequest);
+app.delete("/declineFriendRequest", protectedMiddleware, declineFriendRequest);
+app.delete("/removeFriend", protectedMiddleware, removeFriend);
 
 app.listen(port, () => {
     console.log(`⚡️⚡️⚡️ backend server is up on ${address}:${port}!`);
