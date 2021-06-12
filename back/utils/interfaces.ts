@@ -62,6 +62,17 @@ export interface Friendship {
     friendship_id?: string;
     send_user_id: string;
     recieve_user_id: string;
+    logged_in_user_id?: string;
+    other_user_id?: string;
     status: string;
+    updated_at?: string;
     created_at?: string;
+}
+
+export interface Message {
+    message_id?: string;
+    send_user_id: string;
+    recieve_user_id: string;
+    content: string;
+    is_read: boolean;
 }
