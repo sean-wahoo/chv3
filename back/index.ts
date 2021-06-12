@@ -8,7 +8,7 @@ import {
     deleteUser,
 } from "@routes/auth";
 import { createPost, getPosts } from "@routes/posts";
-import { protectedMiddleware } from "@utils/middleware";
+import { friendMiddleware, protectedMiddleware } from "@utils/middleware";
 import * as dotenv from "dotenv";
 import cors = require("cors");
 import {
@@ -30,6 +30,7 @@ import {
     sendFriendRequest,
     removeFriend,
 } from "@routes/friends";
+import { getMessages, sendMessage, updateReadMessages } from "@routes/messages";
 
 const address = ip.address();
 
@@ -83,6 +84,16 @@ app.get("/sendFriendRequest", protectedMiddleware, sendFriendRequest);
 app.get("/acceptFriendRequest", protectedMiddleware, acceptFriendRequest);
 app.delete("/declineFriendRequest", protectedMiddleware, declineFriendRequest);
 app.delete("/removeFriend", protectedMiddleware, removeFriend);
+
+/// CHAT ///
+app.get("/getMessages", protectedMiddleware, friendMiddleware, getMessages);
+app.post("/sendMessage", protectedMiddleware, friendMiddleware, sendMessage);
+app.get(
+    "/updateReadMessages",
+    protectedMiddleware,
+    friendMiddleware,
+    updateReadMessages
+);
 
 app.listen(port, () => {
     console.log(`⚡️⚡️⚡️ backend server is up on ${address}:${port}!`);
