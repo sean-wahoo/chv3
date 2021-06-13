@@ -39,7 +39,6 @@ export async function createComment(req, res) {
                 comment.is_reply,
                 comment.reply_id,
                 comment.content,
-                comment.reply_id,
             ],
             (err, results) => {
                 if (err) throw err;
@@ -50,16 +49,13 @@ export async function createComment(req, res) {
                 }
                 connection.query(
                     "UPDATE comments, (SELECT COUNT(*) AS comment_count FROM comments WHERE reply_id = ?) AS replies SET comments.num_replies = replies.comment_count WHERE comments.comment_id = ?",
-                    [
-                        comment.reply_id,
-                        comment.reply_id,
-                        (err, results) => {
-                            if (err) throw err;
-                            return res.status(200).send({
-                                message: "Comment created successfully!",
-                            });
-                        },
-                    ]
+                    [comment.reply_id, comment.reply_id],
+                    (err, results) => {
+                        if (err) throw err;
+                        return res.status(200).send({
+                            message: "Comment created successfully!",
+                        });
+                    }
                 );
             }
         );
