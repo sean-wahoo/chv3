@@ -58,7 +58,7 @@ export async function likeComment(req, res) {
                 .status(400)
                 .send({ error: "Please provide a comment id" });
         }
-
+        console.log(user_id);
         connection.query(
             "INSERT INTO likes (like_id, user_id, comment_id) VALUES (?, ?, ?)",
             [like_id, user_id, comment_id],
