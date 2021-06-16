@@ -23,10 +23,32 @@ export async function createPost(req, res) {
         const user = req.user as User;
         const post = req.body as Post;
 
+        if (Object.keys(post).length < 3) {
+            return res.status(401).send({ error: "Request malformed!" });
+        }
+
+        if (
+            !post ||
+            !post.title.trim() ||
+            !post.content ||
+            !post.category.trim()
+        ) {
+            return res
+                .status(401)
+                .send({ error: "Please fill out all fields!" });
+        }
+
         const post_id: string = nanoid(12);
+        post.post_id = post_id;
         connection.query(
             "INSERT INTO posts (post_id, user_id, title, content, category) VALUES (?, ?, ?, ?, ?)",
-            [post_id, user.user_id, post.title, post.content, post.category],
+            [
+                post_id,
+                user.user_id,
+                post.title.trim(),
+                post.content,
+                post.category.trim(),
+            ],
             (err, results) => {
                 if (err) throw err;
                 const urlPostTitle: string = post.title
@@ -34,9 +56,29 @@ export async function createPost(req, res) {
                     .split(" ")
                     .join("-");
                 res.status(200).send({
-                    message: "Post created successfully",
+                    post,
+                    message: "Post created successfully!",
                     link: `${process.env.FRONTEND_URL}/posts/${post_id}/${urlPostTitle}`,
                 });
+            }
+        );
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function deletePost(req, res) {
+    try {
+        const post: Post = req.body.post;
+        const user_id: string = req.user.user_id;
+
+        connection.connect();
+        connection.query(
+            "DELETE FROM posts WHERE user_id = ? AND title = ? AND content = ? AND category = ? LIMIT 4",
+            [user_id, post.title, post.content, post.category],
+            (err, results) => {
+                if (err) throw err;
+                return res.send({ message: "Post deleted successfully" });
             }
         );
     } catch (error) {
