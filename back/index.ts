@@ -7,7 +7,7 @@ import {
     googleSignIn,
     deleteUser,
 } from "@routes/auth";
-import { createPost, getPosts } from "@routes/posts";
+import { createPost, deletePost, getPosts } from "@routes/posts";
 import { friendMiddleware, protectedMiddleware } from "@utils/middleware";
 import * as dotenv from "dotenv";
 import cors = require("cors");
@@ -65,6 +65,7 @@ app.delete("/deleteUser", deleteUser);
 /// POSTS ///
 app.get("/getPosts", getPosts);
 app.post("/createPost", protectedMiddleware, createPost);
+app.delete("/deletePost", protectedMiddleware, deletePost);
 
 /// COMMENTS ///
 app.get("/getCommentsForPost", getCommentsForPost);
