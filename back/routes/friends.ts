@@ -7,7 +7,7 @@ export async function getUsersFriends(req, res) {
         const user_id = req.query.user_id;
         connection.connect();
         connection.query(
-            "SELECT friendship_id, send_user_id, recieve_user_id, status, updated_at FROM friends WHERE status = 'accepted' AND send_user_id = ? OR status = 'accepted' ANDrecieve_user_id = ?",
+            "SELECT friendship_id, send_user_id, recieve_user_id, status, updated_at FROM friends WHERE status = 'accepted' AND send_user_id = ? OR status = 'accepted' AND recieve_user_id = ?",
             [user_id, user_id],
             (err, results) => {
                 if (err) throw err;
@@ -16,7 +16,30 @@ export async function getUsersFriends(req, res) {
         );
     } catch (error) {
         console.error(error);
-        return res.status(500).send(error);
+        return res.status(500).send({ error: error.message });
+    }
+}
+
+export async function getUsersFriendRequests(req, res) {
+    try {
+        const user_id = req.user.user_id;
+        connection.connect();
+        connection.query(
+            "SELECT friendship_id, send_user_id, created_at FROM friends WHERE send_user_id = ? AND status = 'pending'",
+            [user_id],
+            (err, results: any) => {
+                if (err) throw err;
+                if (results.length === 0) {
+                    return res.send({
+                        message: "You don't have any friend requests!",
+                    });
+                }
+                return res.send(results);
+            }
+        );
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ error: error.message });
     }
 }
 
@@ -27,43 +50,67 @@ export async function sendFriendRequest(req, res) {
         if (send_user_id !== recieve_user_id) {
             connection.connect();
             connection.query(
-                "SELECT send_user_id, recieve_user_id, status FROM friends WHERE send_user_id = ? AND recieve_user_id = ? OR recieve_user_id = ? AND send_user_id = ?",
-                [send_user_id, recieve_user_id, send_user_id, recieve_user_id],
+                "SELECT * from users WHERE user_id = ?",
+                [recieve_user_id],
                 (err, results: any) => {
                     if (err) throw err;
                     if (results.length > 0) {
-                        if (results[0].status === "accepted") {
-                            return res.status(400).send({
-                                error: "You are already friends with this user!",
-                            });
-                        } else if (results[0].status === "pending") {
-                            return res.status(400).send({
-                                error: "You already sent a friend request to this user!",
-                            });
-                        } else {
-                            return res.status(500).send(results);
-                        }
-                    }
-                    const friendship_id = nanoid(12);
+                        connection.query(
+                            "SELECT send_user_id, recieve_user_id, status FROM friends WHERE send_user_id = ? AND recieve_user_id = ? OR recieve_user_id = ? AND send_user_id = ?",
+                            [
+                                send_user_id,
+                                recieve_user_id,
+                                send_user_id,
+                                recieve_user_id,
+                            ],
+                            (err, results: any) => {
+                                if (err) throw err;
+                                if (results.length > 0) {
+                                    if (results[0].status === "accepted") {
+                                        return res.status(400).send({
+                                            error: "You are already friends with this user!",
+                                        });
+                                    } else if (
+                                        results[0].status === "pending"
+                                    ) {
+                                        return res.status(400).send({
+                                            error: "You already sent a friend request to this user!",
+                                        });
+                                    } else {
+                                        return res.status(500).send(results);
+                                    }
+                                }
+                                const friendship_id = nanoid(12);
 
-                    connection.query(
-                        "INSERT INTO friends (friendship_id, send_user_id, recieve_user_id) VALUES (?, ?, ?)",
-                        [friendship_id, send_user_id, recieve_user_id],
-                        (err, results) => {
-                            if (err) throw err;
-                            return res.send({
-                                message: "Request sent successfully!",
-                            });
-                        }
-                    );
+                                connection.query(
+                                    "INSERT INTO friends (friendship_id, send_user_id, recieve_user_id) VALUES (?, ?, ?)",
+                                    [
+                                        friendship_id,
+                                        send_user_id,
+                                        recieve_user_id,
+                                    ],
+                                    (err, results) => {
+                                        if (err) throw err;
+                                        return res.send({
+                                            friendship_id,
+                                            message:
+                                                "Request sent successfully!",
+                                        });
+                                    }
+                                );
+                            }
+                        );
+                    } else {
+                        return res
+                            .status(400)
+                            .send({ error: "User doesn't exist!" });
+                    }
                 }
             );
         } else {
-            return res
-                .status(400)
-                .send({
-                    error: "You can't send a friend request to yourself!",
-                });
+            return res.status(400).send({
+                error: "You can't send a friend request to yourself!",
+            });
         }
     } catch (error) {
         console.error(error);
@@ -83,7 +130,7 @@ export async function acceptFriendRequest(req, res) {
             (err, results: any) => {
                 if (err) throw err;
                 if (results.length !== 1) {
-                    return res.status(500).send({
+                    return res.status(400).send({
                         error: "There is no friend request to accept!",
                     });
                 }
@@ -125,7 +172,7 @@ export async function declineFriendRequest(req, res) {
             (err, results: any) => {
                 if (err) throw err;
                 if (results.length !== 1) {
-                    return res.status(500).send({
+                    return res.status(400).send({
                         error: "There is no friend request to decline!",
                     });
                 }
