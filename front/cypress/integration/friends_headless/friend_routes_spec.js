@@ -47,22 +47,22 @@ describe("Friends", () => {
         });
     });
 
-    // after(() => {
-    //     cy.request({
-    //         method: "DELETE",
-    //         url: "http://back.seanreichel.com/removeFriend",
-    //         headers: {
-    //             Authorization: `Bearer ${user1_token}`,
-    //         },
-    //         qs: { user_id: testuser2.user_id },
-    //     }).then((response) => {
-    //         expect(response.status).to.eq(200);
-    //         expect(response.body).to.have.property(
-    //             "message",
-    //             "Friendship successfully removed!"
-    //         );
-    //     });
-    // });
+    after(() => {
+        cy.request({
+            method: "DELETE",
+            url: "http://back.seanreichel.com/removeFriend",
+            headers: {
+                Authorization: `Bearer ${user1_token}`,
+            },
+            qs: { user_id: testuser2.user_id },
+        }).then((response) => {
+            expect(response.status).to.eq(200);
+            expect(response.body).to.have.property(
+                "message",
+                "Friendship successfully removed!"
+            );
+        });
+    });
 
     describe("Send friend request", () => {
         describe("Request failing", () => {
@@ -260,7 +260,7 @@ describe("Friends", () => {
                 cy.request({
                     method: "GET",
                     url: "http://back.seanreichel.com/sendFriendRequest",
-                    failOnStatusCode: false,
+
                     qs: { user_id: testuser2.user_id },
                     headers: {
                         "Content-Type": "application/json",
@@ -285,6 +285,73 @@ describe("Friends", () => {
                     let friendship_ids = [];
                     assert.isArray(response.body);
 
+                    response.body.forEach((requests) => {
+                        friendship_ids.push(requests.friendship_id);
+                    });
+                    expect(friendship_id).to.be.oneOf(friendship_ids);
+                });
+            });
+        });
+    });
+    describe("Accept friend request", () => {
+        let friendship_id;
+
+        it("should send a valid friend request", () => {
+            cy.request({
+                method: "GET",
+                url: "http://back.seanreichel.com/sendFriendRequest",
+
+                qs: { user_id: testuser2.user_id },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${user1_token}`,
+                },
+            }).then((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body).to.have.property(
+                    "message",
+                    "Request sent successfully!"
+                );
+                expect(response.body).to.have.property("friendship_id");
+                friendship_id = response.body.friendship_id;
+            });
+        });
+
+        describe("Request passing", () => {
+            it("should find friend request", () => {
+                cy.request({
+                    method: "GET",
+                    url: "http://back.seanreichel.com/getUsersFriendRequests",
+                    headers: { Authorization: `Bearer ${user1_token}` },
+                }).then((response) => {
+                    let friendship_ids = [];
+                    assert.isArray(response.body);
+
+                    response.body.forEach((requests) => {
+                        friendship_ids.push(requests.friendship_id);
+                    });
+                    expect(friendship_id).to.be.oneOf(friendship_ids);
+                });
+            });
+            it("should accept friend request", () => {
+                cy.request({
+                    method: "GET",
+                    url: "http://back.seanreichel.com/acceptFriendRequest",
+                    qs: { user_id: testuser1.user_id },
+                    headers: {
+                        Authorization: `Bearer ${user2_token}`,
+                    },
+                });
+            });
+            it("should find accepted friendship", () => {
+                cy.request({
+                    method: "GET",
+                    url: "http://back.seanreichel.com/getUsersFriends",
+                    qs: { user_id: testuser1.user_id },
+                }).then((response) => {
+                    expect(response.status).to.eq(200);
+                    assert.isArray(response.body);
+                    let friendship_ids = [];
                     response.body.forEach((requests) => {
                         friendship_ids.push(requests.friendship_id);
                     });
