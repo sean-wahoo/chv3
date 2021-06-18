@@ -7,7 +7,7 @@ import {
     googleSignIn,
     deleteUser,
 } from "@routes/auth";
-import { createPost, deletePost, getPosts } from "@routes/posts";
+import { createPost, deletePost, getPostById, getPosts } from "@routes/posts";
 import { friendMiddleware, protectedMiddleware } from "@utils/middleware";
 import * as dotenv from "dotenv";
 import cors = require("cors");
@@ -16,6 +16,7 @@ import {
     createComment,
     getCommentsByUser,
     getRepliesToComment,
+    deleteComment,
 } from "@routes/comments";
 import {
     getUsersLikes,
@@ -29,6 +30,7 @@ import {
     getUsersFriends,
     sendFriendRequest,
     removeFriend,
+    getUsersFriendRequests,
 } from "@routes/friends";
 import { getMessages, sendMessage, updateReadMessages } from "@routes/messages";
 
@@ -64,6 +66,7 @@ app.delete("/deleteUser", deleteUser);
 
 /// POSTS ///
 app.get("/getPosts", getPosts);
+app.get("/getPost", getPostById);
 app.post("/createPost", protectedMiddleware, createPost);
 app.delete("/deletePost", protectedMiddleware, deletePost);
 
@@ -72,6 +75,7 @@ app.get("/getCommentsForPost", getCommentsForPost);
 app.post("/createComment", protectedMiddleware, createComment);
 app.get("/getCommentsByUser", getCommentsByUser);
 app.get("/getRepliesToComment", getRepliesToComment);
+app.delete("/deleteComment", protectedMiddleware, deleteComment);
 
 /// LIKES ///
 app.get("/getUsersLikes", getUsersLikes);
@@ -81,6 +85,7 @@ app.delete("/unlikePostOrComment", protectedMiddleware, unlikePostOrComment);
 
 /// FRIENDS ///
 app.get("/getUsersFriends", getUsersFriends);
+app.get("/getUsersFriendRequests", protectedMiddleware, getUsersFriendRequests);
 app.get("/sendFriendRequest", protectedMiddleware, sendFriendRequest);
 app.get("/acceptFriendRequest", protectedMiddleware, acceptFriendRequest);
 app.delete("/declineFriendRequest", protectedMiddleware, declineFriendRequest);
