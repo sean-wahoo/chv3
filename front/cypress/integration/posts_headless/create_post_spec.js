@@ -5,6 +5,7 @@ dotenv.config();
 describe("Create Post", () => {
     let user;
     let token;
+    let post_id_for_delete;
 
     before(() => {
         cy.fixture("auth/pass/testuser1.json").then((testuser1) => {
@@ -23,29 +24,22 @@ describe("Create Post", () => {
                 expect(user).to.have.property("email");
                 expect(user.email).to.eq("testing@email.com");
             });
-            // cy.getCookie("session")
-            //     .should("exist")
-            //     .then((c) => {
-            //         cookie = c.token;
-            //     });
         });
     });
     after(() => {
-        cy.fixture("posts/pass/post1.json").then((post_data) => {
-            cy.request({
-                method: "DELETE",
-                url: "http://back.seanreichel.com/deletePost",
-                body: {
-                    post: {
-                        title: post_data.title,
-                        content: post_data.content,
-                        category: post_data.category,
-                    },
+        cy.request({
+            method: "DELETE",
+            url: "http://back.seanreichel.com/deletePost",
+            body: {
+                post: {
+                    post_id: post_id_for_delete,
                 },
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            },
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }).then((response) => {
+            expect(response).to.exist;
         });
     });
     describe("Post Failing", () => {
@@ -216,7 +210,7 @@ describe("Create Post", () => {
                             post.user_id === user.user_id
                         );
                     });
-
+                    post_id_for_delete = valid_posts[0].post_id;
                     expect(valid_posts).to.have.length.of.at.least(1);
                 });
             });
