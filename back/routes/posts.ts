@@ -17,6 +17,26 @@ export async function getPosts(req, res) {
     }
 }
 
+export async function getPostById(req, res) {
+    try {
+        connection.connect();
+        const post_id = req.query.post_id;
+        connection.query(
+            "SELECT * from posts WHERE post_id = ?",
+            [post_id],
+            (err, results: any) => {
+                if (err) throw err;
+                if (results.length > 0) {
+                    return res.send(results[0]);
+                }
+                return res.status(404).send({ error: "Post not found!" });
+            }
+        );
+    } catch (error) {
+        throw error;
+    }
+}
+
 export async function createPost(req, res) {
     try {
         connection.connect();
@@ -74,14 +94,14 @@ export async function deletePost(req, res) {
 
         connection.connect();
         connection.query(
-            "DELETE FROM posts WHERE user_id = ? AND title = ? AND content = ? AND category = ? LIMIT 4",
-            [user_id, post.title, post.content, post.category],
+            "DELETE FROM posts WHERE post_id = ? AND user_id = ?",
+            [post.post_id, user_id],
             (err, results) => {
                 if (err) throw err;
                 return res.send({ message: "Post deleted successfully" });
             }
         );
     } catch (error) {
-        console.error(error);
+        return res.send(error);
     }
 }
