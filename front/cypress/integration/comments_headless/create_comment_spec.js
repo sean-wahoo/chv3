@@ -210,15 +210,14 @@ describe("Comments", () => {
                         }).then((response) => {
                             expect(response).to.exist;
                             expect(response.status).to.eq(200);
-                            expect(response.body).to.have.property(
-                                "comment_id"
-                            );
+                            expect(response.body).to.have.property("comment");
 
                             expect(response.body).to.have.property("message");
                             expect(response.body.message).to.eq(
                                 "Comment created successfully!"
                             );
-                            comment_id_for_delete = response.body.comment_id;
+                            comment_id_for_delete =
+                                response.body.comment.comment_id;
                         });
                     }
                 );
@@ -383,15 +382,14 @@ describe("Comments", () => {
                         }).then((response) => {
                             expect(response).to.exist;
                             expect(response.status).to.eq(200);
-                            expect(response.body).to.have.property(
-                                "comment_id"
-                            );
+                            expect(response.body).to.have.property("comment");
 
                             expect(response.body).to.have.property("message");
                             expect(response.body.message).to.eq(
                                 "Comment created successfully!"
                             );
-                            reply_id_for_delete = response.body.comment_id;
+                            reply_id_for_delete =
+                                response.body.comment.comment_id;
                         });
                     }
                 );
