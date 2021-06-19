@@ -43,11 +43,26 @@ export async function likePost(req, res) {
                         .send({ error: "Please provide a valid post id" });
                 }
                 connection.query(
-                    "INSERT INTO likes (like_id, user_id, post_id) VALUES (?, ?, ?)",
-                    [like_id, user_id, post_id],
-                    (err, results) => {
+                    "SELECT * from likes WHERE user_id = ? AND post_id = ?",
+                    [user_id, post_id],
+                    (err, results: any) => {
                         if (err) throw err;
-                        return res.send({ message: `Post ${post_id} liked!` });
+                        if (results.length !== 0) {
+                            return res
+                                .status(400)
+                                .send({ error: "Post already liked" });
+                        }
+                        connection.query(
+                            "INSERT INTO likes (like_id, user_id, post_id) VALUES (?, ?, ?)",
+                            [like_id, user_id, post_id],
+                            (err, results) => {
+                                if (err) throw err;
+                                return res.send({
+                                    like_id,
+                                    message: `Post ${post_id} liked!`,
+                                });
+                            }
+                        );
                     }
                 );
             }
@@ -70,13 +85,39 @@ export async function likeComment(req, res) {
                 .status(400)
                 .send({ error: "Please provide a comment id" });
         }
-        console.log(user_id);
         connection.query(
-            "INSERT INTO likes (like_id, user_id, comment_id) VALUES (?, ?, ?)",
-            [like_id, user_id, comment_id],
-            (err, results) => {
+            "SELECT * FROM comments WHERE comment_id = ?",
+            [comment_id],
+            (err, results: any) => {
                 if (err) throw err;
-                return res.send({ message: `Comment ${comment_id} liked!` });
+                if (results.length === 0) {
+                    return res
+                        .status(400)
+                        .send({ error: "Please provide a valid comment id" });
+                }
+                connection.query(
+                    "SELECT * from likes WHERE user_id = ? AND comment_id = ?",
+                    [user_id, comment_id],
+                    (err, results: any) => {
+                        if (err) throw err;
+                        if (results.length !== 0) {
+                            return res
+                                .status(400)
+                                .send({ error: "Comment already liked" });
+                        }
+                        connection.query(
+                            "INSERT INTO likes (like_id, user_id, comment_id) VALUES (?, ?, ?)",
+                            [like_id, user_id, comment_id],
+                            (err, results) => {
+                                if (err) throw err;
+                                return res.send({
+                                    like_id,
+                                    message: `Comment ${comment_id} liked!`,
+                                });
+                            }
+                        );
+                    }
+                );
             }
         );
     } catch (error) {
