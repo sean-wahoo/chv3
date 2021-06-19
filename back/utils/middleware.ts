@@ -39,12 +39,16 @@ export function friendMiddleware(req, res, next) {
         const logged_in_user_id: string = req.user.user_id;
         const other_user_id: string = req.query.user_id;
 
-        console.log(logged_in_user_id, other_user_id);
+        if (!other_user_id || other_user_id.length === 0) {
+            return res
+                .status(403)
+                .send({ error: "Please provide a user id for your friend!" });
+        }
 
         if (logged_in_user_id !== other_user_id) {
             connection.connect();
             connection.query(
-                "SELECT friendship_id, status, send_user_id, recieve_user_id, created_at, updated_at FROM friends WHERE (send_user_id = ? AND recieve_user_id = ?) OR (recieve_user_id = ? AND send_user_id = ?)",
+                "SELECT friendship_id, status, send_user_id, recieve_user_id, created_at, updated_at FROM friends WHERE (send_user_id = ? AND recieve_user_id = ? AND status = 'accepted') OR (recieve_user_id = ? AND send_user_id = ? AND status = 'accepted')",
                 [
                     logged_in_user_id,
                     other_user_id,
@@ -75,7 +79,7 @@ export function friendMiddleware(req, res, next) {
             );
         } else {
             res.status(404).send({
-                error: "Whatever you did was not allowed. Stop!",
+                error: "You can't be friends with yourself!",
             });
         }
     } catch (error) {
