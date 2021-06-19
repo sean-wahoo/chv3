@@ -27,6 +27,10 @@ export async function sendMessage(req, res) {
             req.friendship;
         const message_id = nanoid(18);
 
+        if (!content || content.trim().length === 0) {
+            return res.status(401).send({ error: "Please provide a message!" });
+        }
+
         connection.connect();
 
         connection.query(
@@ -40,7 +44,10 @@ export async function sendMessage(req, res) {
             ],
             (err, results) => {
                 if (err) throw err;
-                return res.send({ message: "Message sent successfully!" });
+                return res.send({
+                    message_id,
+                    message: "Message sent successfully!",
+                });
             }
         );
     } catch (error) {
