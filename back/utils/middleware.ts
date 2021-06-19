@@ -7,14 +7,26 @@ dotenv.config();
 
 export function protectedMiddleware(req, res, next) {
     try {
-        const SESSION_SECRET = process.env.SESSION_SECRET;
-        const token: string = req.headers.authorization.split("Bearer ")[1];
-        let data;
-        if ((data = jwt.verify(token, SESSION_SECRET))) {
-            req.user = data.data;
-            next();
+        if (!req.headers.authorization) {
+            return res.status(403).send({ error: "No auth header!" });
+        }
+        if (req.headers.authorization.includes("Bearer")) {
+            if (req.headers.authorization.split("Bearer ").length === 2) {
+                const SESSION_SECRET = process.env.SESSION_SECRET;
+                const token: string =
+                    req.headers.authorization.split("Bearer ")[1];
+                let data;
+                if ((data = jwt.verify(token, SESSION_SECRET))) {
+                    req.user = data.data;
+                    next();
+                } else {
+                    return res.status(403).send({ error: "JWT failed!" });
+                }
+            } else {
+                return res.status(403).send({ error: "No auth token!" });
+            }
         } else {
-            return res.status(403).send({ error: "jwt failed" });
+            return res.status(403).send({ error: "Malformed auth header!" });
         }
     } catch (error) {
         console.error(error);
