@@ -39,7 +39,9 @@ jobs:
                   parallel: true
                   group: "Auth"
                   spec: "cypress/integration/auth/login_spec.js"
-                  browser: firefox
+                  browser: chrome
+              env:
+                  CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
             - name: Register
               uses: cypress-io/github-action@v2
               with:
@@ -49,7 +51,9 @@ jobs:
                   parallel: true
                   group: "Auth"
                   spec: "cypress/integration/auth/register_spec.js"
-                  browser: firefox
+                  browser: chrome
+              env:
+                  CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
             - name: Posts/Comments/Likes
               uses: cypress-io/github-action@v2
               with:
@@ -62,7 +66,9 @@ jobs:
                       cypress/integration/posts_headless/*
                       cypress/integration/comments_headless/*
                       cypress/integration/likes_headless/*
-                  browser: firefox
+                  browser: chrome
+              env:
+                  CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
             - name: Friends/Messages
               uses: cypress-io/github-action@v2
               with:
@@ -72,7 +78,7 @@ jobs:
                   parallel: true
                   group: "Friends/Messages"
                   spec: cypress/integration/friends_headless/*
-                  browser: firefox
+                  browser: chrome
 
               env:
                   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
