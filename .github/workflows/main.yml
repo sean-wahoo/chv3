@@ -18,7 +18,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                machines: [1, 2, 3, 4]
+                containers: [1, 2, 3, 4]
         steps:
             - name: Checkout
               uses: actions/checkout@v2
@@ -28,13 +28,48 @@ jobs:
               with:
                   node-version: 12.x
 
-            - name: Cypress run
+            - name: Login
               uses: cypress-io/github-action@v2
               with:
                   working-directory: front
                   config-file: cypress.json
                   record: true
                   parallel: true
+                  group: "Auth"
+                  spec: "cypress/integration/auth/login_spec.js"
+                  browser: firefox
+            - name: Register
+              uses: cypress-io/github-action@v2
+              with:
+                  working-directory: front
+                  config-file: cypress.json
+                  record: true
+                  parallel: true
+                  group: "Auth"
+                  spec: "cypress/integration/auth/register_spec.js"
+                  browser: firefox
+            - name: Posts/Comments/Likes
+              uses: cypress-io/github-action@v2
+              with:
+                  working-directory: front
+                  config-file: cypress.json
+                  record: true
+                  parallel: true
+                  group: "Posts/Comments"
+                  spec: |
+                      cypress/integration/posts_headless/*
+                      cypress/integration/comments_headless/*
+                      cypress/integration/likes_headless/*
+                  browser: firefox
+            - name: Friends/Messages
+              uses: cypress-io/github-action@v2
+              with:
+                  working-directory: front
+                  config-file: cypress.json
+                  record: true
+                  parallel: true
+                  group: "Friends/Messages"
+                  spec: cypress/integration/friends_headless/*
                   browser: firefox
 
               env:
