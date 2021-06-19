@@ -33,11 +33,23 @@ export async function likePost(req, res) {
         }
 
         connection.query(
-            "INSERT INTO likes (like_id, user_id, post_id) VALUES (?, ?, ?)",
-            [like_id, user_id, post_id],
-            (err, results) => {
+            "SELECT * FROM posts WHERE post_id = ?",
+            [post_id],
+            (err, results: any) => {
                 if (err) throw err;
-                return res.send({ message: `Post ${post_id} liked!` });
+                if (results.length === 0) {
+                    return res
+                        .status(400)
+                        .send({ error: "Please provide a valid post id" });
+                }
+                connection.query(
+                    "INSERT INTO likes (like_id, user_id, post_id) VALUES (?, ?, ?)",
+                    [like_id, user_id, post_id],
+                    (err, results) => {
+                        if (err) throw err;
+                        return res.send({ message: `Post ${post_id} liked!` });
+                    }
+                );
             }
         );
     } catch (error) {

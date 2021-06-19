@@ -102,6 +102,6 @@ export async function deletePost(req, res) {
             }
         );
     } catch (error) {
-        return res.send(error);
+        return res.json(error.message);
     }
 }
