@@ -70,6 +70,7 @@ export async function createComment(req, res) {
                                 comment.comment_id = comment_id;
                                 return res.status(200).send({
                                     comment_id,
+                                    comment,
                                     message: "Comment created successfully!",
                                 });
                             }
@@ -78,8 +79,10 @@ export async function createComment(req, res) {
                                 [comment.reply_id, comment.reply_id],
                                 (err, results) => {
                                     if (err) throw err;
+                                    comment.comment_id = comment_id;
                                     return res.status(200).send({
                                         comment_id,
+                                        comment,
                                         message:
                                             "Comment created successfully!",
                                     });
