@@ -33,6 +33,11 @@ import {
     getUsersFriendRequests,
 } from "@routes/friends";
 import { getMessages, sendMessage, updateReadMessages } from "@routes/messages";
+import {
+    clearAllNotifications,
+    clearOneNotification,
+    getNotifications,
+} from "@routes/notifications";
 
 const address = ip.address();
 
@@ -99,6 +104,15 @@ app.get(
     protectedMiddleware,
     friendMiddleware,
     updateReadMessages
+);
+
+/// NOTIFICATIONS ///
+app.get("/getNotifications", protectedMiddleware, getNotifications);
+app.delete("/clearOneNotification", protectedMiddleware, clearOneNotification);
+app.delete(
+    "/clearAllNotifications",
+    protectedMiddleware,
+    clearAllNotifications
 );
 
 app.listen(port, () => {
