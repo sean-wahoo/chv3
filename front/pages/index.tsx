@@ -1,30 +1,71 @@
 import { useRouter } from "next/router";
-import { logout } from "@utils/auth";
+import axios from "axios";
+
+import { GetServerSideProps } from "next";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
+
 import Loading from "@utils/loading";
+import Navbar, { MobileBottomNav } from "@components/Navbar";
+import { DetailedPost } from "@utils/interfaces";
 
 export default function Home(props: any) {
     const router = useRouter();
     if (process.browser && !props.auth.isAuth) {
         router.push("/login");
     }
+    TimeAgo.addLocale(en);
+    const timeAgo = new TimeAgo("en-us");
+    const posts = props.posts.map((post: DetailedPost) => {
+        return (
+            <div
+                key={post.post_id}
+                className="w-full bg-white dark:bg-postBlockDark md:border md:rounded-none rounded-lg border-lightBorder dark:border-black p-4 my-1"
+            >
+                <h4 className="text-sm md:hidden ml-auto dark:text-postBodyDark ">
+                    posted by {post.username}{" "}
+                    {timeAgo.format(new Date(post.created_at))}
+                </h4>
+                <div className="flex flex-row">
+                    <h4 className="font-medium mr-auto text-xl dark:text-white">
+                        {post.title}
+                    </h4>
+                    <h4 className="lg:text-md md:text-sm md:block hidden ml-auto dark:text-white">
+                        posted by {post.username}{" "}
+                        {timeAgo.format(new Date(post.created_at))}
+                    </h4>
+                </div>
+                <p className="my-4 text-postBodyLight dark:text-postBodyDark">
+                    {post.content}
+                </p>
+                <p className="dark:text-white">
+                    {post.num_likes} likes · {post.num_comments} comments
+                </p>
+            </div>
+        );
+    });
+
     return !props.auth.isAuth ? (
         <Loading />
     ) : (
-        <div className="w-full h-screen bg-blue-400 flex flex-col items-center justify-center">
-            <div className="bg-white rounded-lg h-auto w-auto p-4">
-                <h1 className="font_work_sans_h1 text-5xl text-indigo-900">
-                    Index
-                </h1>
+        <div className="w-full min-h-screen bg-pageBgLight dark:bg-pageBgDark flex flex-col font-work-sans font-normal">
+            <Navbar user_data={props.auth.user} />
+            <div className="pt-20 pb-16 mx-auto mb-auto mt-2 xl:w-2/5 lg:w-3/5 md:w-4/5 w-full flex flex-col">
+                {posts}
             </div>
-            <div className="mt-4 bg-white rounded-lg h-auto w-auto p-4">
-                <button
-                    id="logout"
-                    onClick={logout}
-                    className="font_work_sans_h1 text-5xl text-indigo-900"
-                >
-                    log out
-                </button>
-            </div>
+            <MobileBottomNav user_data={props.auth.user} />
         </div>
     );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const posts = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/getPosts`
+    );
+
+    return {
+        props: {
+            posts: posts.data,
+        },
+    };
+};
