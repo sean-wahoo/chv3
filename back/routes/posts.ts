@@ -8,10 +8,13 @@ dotenv.config();
 export async function getPosts(req, res) {
     try {
         connection.connect();
-        connection.query("SELECT * from posts LIMIT 5", (err, results) => {
-            if (err) throw err;
-            res.status(200).send(results);
-        });
+        connection.query(
+            "SELECT posts.*, users.username from posts LEFT JOIN users ON posts.user_id = users.user_id ORDER BY created_at DESC LIMIT 8",
+            (err, results) => {
+                if (err) throw err;
+                res.status(200).send(results);
+            }
+        );
     } catch (error) {
         console.error(error);
     }
