@@ -102,7 +102,7 @@ export default function Login(props: any) {
             </div>
             <div className="bg-white rounded-lg h-auto items-center justify-center md:justify-evenly flex flex-col 2xl:w-1/5 lg:w-2/5 w-1/2 p-6">
                 <div className="flex flex-col w-full">
-                    <h1 className="font-work-sans text-center 2xl:text-6xl xl:text-5xl text-4xl text-indigo-800">
+                    <h1 className="font-work-sans font-bold text-center 2xl:text-6xl xl:text-5xl text-4xl text-indigo-800">
                         Log in
                     </h1>
                     {errors.length > 0 && (
