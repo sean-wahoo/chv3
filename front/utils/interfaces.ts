@@ -48,6 +48,7 @@ export interface Comment {
 }
 
 export interface DetailedComment extends Comment {
+    username: string;
     num_likes: number;
     num_replies: number;
 }
