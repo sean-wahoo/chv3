@@ -1,4 +1,5 @@
-import { connection } from "@utils/connection";
+import { config } from "@utils/connection";
+import * as mysql from "mysql2/promise";
 import { User, RegisterUser, LoginUser } from "@utils/interfaces";
 
 /* these functions' return object will look like { pass, error }
@@ -11,21 +12,33 @@ import { User, RegisterUser, LoginUser } from "@utils/interfaces";
  * @param email User's email
  * @returns object stating whether the validation passed and an error message if any
  */
-export function checkIfEmailIsInUse(email: string) {
+export async function checkIfEmailIsInUse(email: string) {
     try {
-        return connection.query(
+        const connection = await mysql.createConnection(config);
+        const [isEmailTaken]: any[] = await connection.execute(
             "SELECT email FROM users WHERE email = ?",
-            [email],
-            (error, results: any) => {
-                if (error) throw error;
-                if (results.length > 0)
-                    return {
-                        passed: false,
-                        error: "A user with that email already exists",
-                    };
-                else return { passed: true, error: "null" };
-            }
+            [email]
         );
+        if (isEmailTaken.length > 0) {
+            return {
+                passed: false,
+                error: "A user with that email already exists",
+            };
+        }
+        return { passed: true, error: "null" };
+        // return connection.query(
+        //     "SELECT email FROM users WHERE email = ?",
+        //     [email],
+        //     (error, results: any) => {
+        //         if (error) throw error;
+        //         if (results.length > 0)
+        //             return {
+        //                 passed: false,
+        //                 error: "A user with that email already exists",
+        //             };
+        //         else return { passed: true, error: "null" };
+        //     }
+        // );
     } catch (error) {
         console.error;
     }
@@ -36,21 +49,33 @@ export function checkIfEmailIsInUse(email: string) {
  * @param username - User's username
  * @returns object stating whether the validation passed and an error message if any
  */
-export function checkIfUsernameIsInUse(username: string) {
+export async function checkIfUsernameIsInUse(username: string) {
     try {
-        return connection.query(
+        const connection = await mysql.createConnection(config);
+        const [isUsernameTaken]: any[] = await connection.execute(
             "SELECT `username` FROM `users` WHERE `username` = ?",
-            [username],
-            (error, results: any) => {
-                if (error) throw error;
-                if (results.length > 0)
-                    return {
-                        passed: false,
-                        error: "A user with that email already exists",
-                    };
-                else return { passed: true, error: "null" };
-            }
+            [username]
         );
+        if (isUsernameTaken.length > 0) {
+            return {
+                passed: false,
+                error: "A user with that email already exists",
+            };
+        }
+        return { passed: true, error: "null" };
+        // return connection.query(
+        //     "SELECT `username` FROM `users` WHERE `username` = ?",
+        //     [username],
+        //     (error, results: any) => {
+        //         if (error) throw error;
+        //         if (results.length > 0)
+        //             return {
+        //                 passed: false,
+        //                 error: "A user with that email already exists",
+        //             };
+        //         else return { passed: true, error: "null" };
+        //     }
+        // );
     } catch (error) {
         console.error;
     }
