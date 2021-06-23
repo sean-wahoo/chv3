@@ -4,6 +4,10 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
+/**
+ * @type {object}
+ * configuration for mysql connection
+ */
 export const config = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -11,7 +15,3 @@ export const config = {
     database: process.env.DB_DATABASE,
     Promise: bluebird,
 };
-
-/**
- * mysql database connection object
- */
