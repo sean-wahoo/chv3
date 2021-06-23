@@ -3,7 +3,7 @@ import { config } from "@utils/connection";
 import * as mysql from "mysql2/promise";
 import { registerValidation, loginValidation } from "@utils/validation";
 import { createSessionToken, updateSessionToken } from "@utils/session";
-import bcrypt from "bcrypt";
+import bcrypt = require("bcrypt");
 import * as jwt from "jsonwebtoken";
 import { nanoid } from "nanoid";
 import * as dotenv from "dotenv";
