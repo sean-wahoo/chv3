@@ -2,11 +2,6 @@ import { config } from "@utils/connection";
 import * as mysql from "mysql2/promise";
 import { User, RegisterUser, LoginUser } from "@utils/interfaces";
 
-/* these functions' return object will look like { pass, error }
- * if there is no error, the field will be null. if there is an error,
- * it will show the error
- */
-
 /**
  * Checks database to see if username is in use
  * @param email User's email
@@ -26,19 +21,6 @@ export async function checkIfEmailIsInUse(email: string) {
             };
         }
         return { passed: true, error: "null" };
-        // return connection.query(
-        //     "SELECT email FROM users WHERE email = ?",
-        //     [email],
-        //     (error, results: any) => {
-        //         if (error) throw error;
-        //         if (results.length > 0)
-        //             return {
-        //                 passed: false,
-        //                 error: "A user with that email already exists",
-        //             };
-        //         else return { passed: true, error: "null" };
-        //     }
-        // );
     } catch (error) {
         console.error;
     }
@@ -63,19 +45,6 @@ export async function checkIfUsernameIsInUse(username: string) {
             };
         }
         return { passed: true, error: "null" };
-        // return connection.query(
-        //     "SELECT `username` FROM `users` WHERE `username` = ?",
-        //     [username],
-        //     (error, results: any) => {
-        //         if (error) throw error;
-        //         if (results.length > 0)
-        //             return {
-        //                 passed: false,
-        //                 error: "A user with that email already exists",
-        //             };
-        //         else return { passed: true, error: "null" };
-        //     }
-        // );
     } catch (error) {
         console.error;
     }

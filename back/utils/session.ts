@@ -3,7 +3,6 @@ import { User } from "@utils/interfaces";
 import * as dotenv from "dotenv";
 import * as mysql from "mysql2/promise";
 import { config } from "@utils/connection";
-import { RowDataPacket } from "mysql2";
 
 dotenv.config();
 const SESSION_SECRET: string = process.env.SESSION_SECRET;
@@ -30,11 +29,7 @@ export function createSessionToken(user: User) {
  * @param token ALREADY EXISTING/VALID token to allow extension/updated user data
  * @returns JSON web token to be saved in cookie in browser
  */
-export async function updateSessionToken(
-    user: User,
-    token: string
-    // callback: (token?: string, err?: Error) => void
-) {
+export async function updateSessionToken(user: User, token: string) {
     try {
         if (jwt.verify(token, SESSION_SECRET)) {
             const connection = await mysql.createConnection(config);
@@ -61,32 +56,6 @@ export async function updateSessionToken(
             );
 
             return token;
-
-            // connection.query(
-            //     "SELECT user_id, username, email FROM users WHERE user_id = ?",
-            //     [user.user_id],
-            //     (err: Error, results: RowDataPacket[]) => {
-            //         if (err) throw err;
-            //         if (results.length < 1) {
-            //             throw new Error("Not quite sure what went wrong!");
-            //         } else {
-            //             const token = jwt.sign(
-            //                 {
-            //                     data: {
-            //                         user_id: results[0].user_id,
-            //                         username: results[0].email,
-            //                         email: results[0].email,
-            //                     },
-            //                     exp:
-            //                         Math.floor(Date.now() / 1000) +
-            //                         60 * 60 * 24,
-            //                 },
-            //                 SESSION_SECRET
-            //             );
-            //             return callback(token);
-            //         }
-            //     }
-            // );
         } else {
             throw new Error("token_verification_error");
         }
