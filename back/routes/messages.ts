@@ -12,6 +12,7 @@ export async function getMessages(req, res) {
             "SELECT message_id, content, is_read, created_at FROM messages WHERE friendship_id = ? ORDER BY created_at DESC",
             [friendship.friendship_id]
         );
+        connection.destroy();
         return res.send(messages);
     } catch (error) {
         console.error(error);
@@ -41,6 +42,7 @@ export async function sendMessage(req, res) {
                 content,
             ]
         );
+        connection.destroy();
         return res.send({
             message_id,
             message: "Message sent successfully!",
@@ -61,6 +63,7 @@ export async function updateReadMessages(req, res) {
             "UPDATE messages SET is_read = true WHERE friendship_id = ? AND recieve_user_id = ? AND send_user_id = ?",
             [friendship_id, logged_in_user_id, other_user_id]
         );
+        connection.destroy();
         return res.send({ message: "Messages have been read!" });
     } catch (error) {
         console.error(error);

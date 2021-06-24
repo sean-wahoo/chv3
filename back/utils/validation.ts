@@ -14,6 +14,7 @@ export async function checkIfEmailIsInUse(email: string) {
             "SELECT email FROM users WHERE email = ?",
             [email]
         );
+        connection.destroy();
         if (isEmailTaken.length > 0) {
             return {
                 passed: false,
@@ -38,6 +39,7 @@ export async function checkIfUsernameIsInUse(username: string) {
             "SELECT `username` FROM `users` WHERE `username` = ?",
             [username]
         );
+        connection.destroy();
         if (isUsernameTaken.length > 0) {
             return {
                 passed: false,

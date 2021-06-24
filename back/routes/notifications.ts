@@ -13,6 +13,7 @@ export async function getNotifications(req, res) {
         if (notifications.length === 0) {
             return res.status(200).send({ message: "No notifications found!" });
         }
+        connection.destroy();
         return res.send(notifications);
     } catch (error) {
         console.error(error);
@@ -45,6 +46,7 @@ export async function clearOneNotification(req, res) {
             "DELETE FROM notifications WHERE notification_id = ? AND user_id = ?",
             [notification_id, user_id]
         );
+        connection.destroy();
         return res.send({ message: "Notification cleared!" });
     } catch (error) {
         console.error(error);
@@ -62,6 +64,7 @@ export async function clearAllNotifications(req, res) {
             "DELETE FROM notifications WHERE user_id = ?",
             [user_id]
         );
+        connection.destroy();
         return res.send({ message: "Notifications cleared!" });
     } catch (error) {
         console.error(error);

@@ -38,6 +38,7 @@ export async function updateSessionToken(user: User, token: string) {
                 "SELECT user_id, username, email FROM users WHERE user_id = ?",
                 [user.user_id]
             );
+            connection.destroy();
 
             if (selectedUser.length === 0) {
                 throw new Error("Not a real user!");

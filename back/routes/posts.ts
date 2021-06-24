@@ -30,6 +30,7 @@ export async function getPostById(req, res) {
         if (post.length === 0) {
             return res.status(404).send({ error: "Post not found!" });
         }
+        connection.destroy();
         return res.send(post[0]);
     } catch (error) {
         console.error(error);
@@ -74,7 +75,8 @@ export async function createPost(req, res) {
             .toLowerCase()
             .split(" ")
             .join("-");
-        res.status(200).send({
+        connection.destroy();
+        return res.status(200).send({
             post,
             message: "Post created successfully!",
             link: `${process.env.FRONTEND_URL}/posts/${post_id}/${urlPostTitle}`,
@@ -94,6 +96,7 @@ export async function deletePost(req, res) {
             "DELETE FROM posts WHERE post_id = ? AND user_id = ?",
             [post.post_id, user_id]
         );
+        connection.destroy();
         return res.send({ message: "Post deleted successfully" });
     } catch (error) {
         return res.json(error.message);

@@ -11,6 +11,7 @@ export async function getUsersLikes(req, res) {
             "SELECT like_id, post_id, comment_id, created_at FROM likes WHERE user_id = ?",
             [user_id]
         );
+        connection.destroy();
         return res.send(usersLikes);
     } catch (error) {
         console.error(error);
@@ -52,6 +53,7 @@ export async function likePost(req, res) {
             "INSERT INTO likes (like_id, user_id, post_id) VALUES (?, ?, ?)",
             [like_id, user_id, post_id]
         );
+        connection.destroy();
         return res.send({
             like_id,
             message: `Post ${post_id} liked!`,
@@ -98,6 +100,7 @@ export async function likeComment(req, res) {
             "INSERT INTO likes (like_id, user_id, comment_id) VALUES (?, ?, ?)",
             [like_id, user_id, comment_id]
         );
+        connection.destroy();
         return res.send({
             like_id,
             message: `Comment ${comment_id} liked!`,
@@ -119,6 +122,7 @@ export async function unlikePostOrComment(req, res) {
             "DELETE FROM likes WHERE like_id = ? AND user_id = ?",
             [like_id, user_id]
         );
+        connection.destroy();
         return res.send({
             message: `Post or comment with like_id ${like_id} unliked!`,
         });

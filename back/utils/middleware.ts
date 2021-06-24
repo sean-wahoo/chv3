@@ -24,6 +24,7 @@ export function protectedMiddleware(req, res, next) {
             req.user = data.data;
             return next();
         }
+
         return res.status(403).send({ error: "JWT failed!" });
     } catch (error) {
         console.error(error);
@@ -71,6 +72,7 @@ export async function friendMiddleware(req, res, next) {
         };
 
         req.friendship = friendship;
+        connection.destroy();
         return next();
     } catch (error) {
         console.error(error);

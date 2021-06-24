@@ -14,7 +14,7 @@ export async function getCommentsForPost(req, res) {
                 "SELECT users.username, comments.comment_id, comments.post_id, comments.user_id, comments.is_reply, comments.reply_id, comments.content, comments.num_likes, comments.num_replies, comments.created_at FROM comments LEFT JOIN users ON comments.user_id = users.user_id WHERE comments.reply_id = ? ORDER BY(comments.num_likes + comments.num_replies) DESC",
                 [comment.comment_id]
             );
-            console.log(nestedCommentData);
+
             if (nestedCommentData.length === 0) {
                 return {
                     comment_id: comment.comment_id,
@@ -58,7 +58,7 @@ export async function getCommentsForPost(req, res) {
                     return await parseReplies(comment);
                 })
             );
-            console.log(comments);
+            connection.destroy();
             return res.send(comments);
         }
     } catch (error) {
@@ -125,6 +125,7 @@ export async function createComment(req, res) {
             [comment.reply_id, comment.reply_id]
         );
         comment.comment_id = comment_id;
+        connection.destroy();
         return res.status(200).send({
             comment_id,
             comment,
@@ -145,6 +146,7 @@ export async function getCommentsByUser(req, res) {
             "SELECT comment_id, post_id, is_reply, reply_id, content, num_likes, num_replies, created_at FROM comments WHERE user_id = ?",
             [user_id]
         );
+        connection.destroy();
         return res.send(commentsByUser);
     } catch (error) {
         console.error(error);
@@ -165,6 +167,7 @@ export async function getRepliesToComment(req, res) {
         if (repliesToComment.length === 0) {
             return res.send({ message: "No replies!" });
         }
+        connection.destroy();
         return res.status(200).send(repliesToComment);
     } catch (error) {
         console.error(error);
@@ -183,6 +186,7 @@ export async function deleteComment(req, res) {
             "DELETE FROM comments WHERE comment_id = ? AND user_id = ?",
             [comment_id, user_id]
         );
+        connection.destroy();
         return res.send({ message: "Comment deleted successfully" });
     } catch (error) {
         return res.send(error);

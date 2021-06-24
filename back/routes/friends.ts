@@ -11,6 +11,7 @@ export async function getUsersFriends(req, res) {
             "SELECT friendship_id, send_user_id, recieve_user_id, status, updated_at FROM friends WHERE status = 'accepted' AND send_user_id = ? OR status = 'accepted' AND recieve_user_id = ?",
             [user_id, user_id]
         );
+        connection.destroy();
         return res.send(usersFriends);
     } catch (error) {
         console.error(error);
@@ -33,6 +34,7 @@ export async function getUsersFriendRequests(req, res) {
                 message: "You don't have any friend requests!",
             });
         }
+        connection.destroy();
         return res.send(friendRequests);
     } catch (error) {
         console.error(error);
@@ -88,6 +90,7 @@ export async function sendFriendRequest(req, res) {
             "INSERT INTO friends (friendship_id, send_user_id, recieve_user_id) VALUES (?, ?, ?)",
             [friendship_id, send_user_id, recieve_user_id]
         );
+        connection.destroy();
         return res.send({
             friendship_id,
             message: "Request sent successfully!",
@@ -125,6 +128,7 @@ export async function acceptFriendRequest(req, res) {
             "UPDATE friends SET status = 'accepted' WHERE friendship_id = ?",
             [friendship_id]
         );
+        connection.destroy();
         return res.send({
             message: "Friend request accepted!",
         });
@@ -159,6 +163,7 @@ export async function declineFriendRequest(req, res) {
             "DELETE FROM friends WHERE friendship_id = ? AND status = 'pending'",
             [friendship_id]
         );
+        connection.destroy();
         return res.send({
             message: "Friend request declined!",
         });
@@ -189,7 +194,7 @@ export async function removeFriend(req, res) {
             "DELETE FROM friends WHERE friendship_id = ?",
             [friendshipData[0].friendship_id]
         );
-
+        connection.destroy();
         return res.send({
             message: "Friendship successfully removed!",
         });

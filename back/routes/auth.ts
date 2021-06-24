@@ -186,7 +186,8 @@ export async function loginRoute(req, res) {
             username: doesUserExist[0].username,
             email: doesUserExist[0].email,
         });
-        res.status(200).send({
+        connection.destroy();
+        return res.status(200).send({
             user: {
                 user_id: doesUserExist[0].user_id,
                 username: doesUserExist[0].username,
@@ -269,6 +270,7 @@ export async function verifyAuth(req, res) {
                     email: verifiedUser[0].email,
                 },
             };
+            connection.destroy();
             return res.send(payload);
         } else {
             throw new Error("token_verify_failed");
@@ -318,6 +320,7 @@ export async function deleteUser(req, res) {
         await connection.execute("DELETE FROM users WHERE user_id = ?", [
             user_id,
         ]);
+        connection.destroy();
         return res.status(200).send({ message: "User successfully deleted" });
     } catch (error) {
         console.error(error);
@@ -395,6 +398,7 @@ export async function googleSignIn(req, res) {
          */
         googleUser.user_id = user_id;
         const token = createSessionToken(googleUser);
+        connection.destroy();
         return res.send({
             user: {
                 user_id,
