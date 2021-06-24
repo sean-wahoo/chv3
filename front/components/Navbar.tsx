@@ -129,8 +129,15 @@ export default function Navbar(props: any) {
     return (
         <>
             <nav className="bg-white fixed dark:bg-postBlockDark flex flex-row w-full text-purpleNav text-2xl items-center p-2">
-                <Logo className="fill-current m-2" />
-                <h1 className="text-gray-600 dark:text-white">ConnectHigh</h1>
+                <Link href="/" passHref>
+                    <div className="flex flex-row items-center ">
+                        <Logo className="cursor-pointer fill-current m-2" />
+
+                        <h1 className="cursor-pointer text-gray-600 dark:text-white">
+                            ConnectHigh
+                        </h1>
+                    </div>
+                </Link>
                 <h1
                     onClick={() => setToggle(!toggle)}
                     ref={toggleRef}
