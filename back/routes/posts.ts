@@ -1,18 +1,20 @@
-import { config } from "@utils/connection";
+import { connection } from "@utils/connection";
 import { nanoid } from "nanoid";
 import { Post, User } from "@utils/interfaces";
 import * as dotenv from "dotenv";
-import * as mysql from "mysql2/promise";
 
 dotenv.config();
 
 export async function getPosts(req, res) {
     try {
-        const connection = await mysql.createConnection(config);
-        const [posts]: any[] = await connection.execute(
-            "SELECT posts.*, users.username from posts LEFT JOIN users ON posts.user_id = users.user_id ORDER BY created_at DESC LIMIT 8"
+        connection.connect();
+        connection.query(
+            "SELECT posts.*, users.username from posts LEFT JOIN users ON posts.user_id = users.user_id ORDER BY created_at DESC LIMIT 8",
+            (err, results) => {
+                if (err) throw err;
+                res.status(200).send(results);
+            }
         );
-        return res.send(posts);
     } catch (error) {
         console.error(error);
     }
@@ -20,25 +22,27 @@ export async function getPosts(req, res) {
 
 export async function getPostById(req, res) {
     try {
-        const connection = await mysql.createConnection(config);
+        connection.connect();
         const post_id = req.query.post_id;
-
-        const [post]: any[] = await connection.execute(
-            "SELECT posts.*, users.username from posts LEFT JOIN users ON posts.user_id = users.user_id WHERE posts.post_id = ? ",
-            [post_id]
+        connection.query(
+            "SELECT * from posts WHERE post_id = ?",
+            [post_id],
+            (err, results: any) => {
+                if (err) throw err;
+                if (results.length > 0) {
+                    return res.send(results[0]);
+                }
+                return res.status(404).send({ error: "Post not found!" });
+            }
         );
-        if (post.length === 0) {
-            return res.status(404).send({ error: "Post not found!" });
-        }
-        connection.destroy();
-        return res.send(post[0]);
     } catch (error) {
-        console.error(error);
+        throw error;
     }
 }
 
 export async function createPost(req, res) {
     try {
+        connection.connect();
         const user = req.user as User;
         const post = req.body as Post;
 
@@ -59,8 +63,7 @@ export async function createPost(req, res) {
 
         const post_id: string = nanoid(12);
         post.post_id = post_id;
-        const connection = await mysql.createConnection(config);
-        await connection.execute(
+        connection.query(
             "INSERT INTO posts (post_id, user_id, title, content, category) VALUES (?, ?, ?, ?, ?)",
             [
                 post_id,
@@ -68,19 +71,20 @@ export async function createPost(req, res) {
                 post.title.trim(),
                 post.content,
                 post.category.trim(),
-            ]
+            ],
+            (err, results) => {
+                if (err) throw err;
+                const urlPostTitle: string = post.title
+                    .toLowerCase()
+                    .split(" ")
+                    .join("-");
+                res.status(200).send({
+                    post,
+                    message: "Post created successfully!",
+                    link: `${process.env.FRONTEND_URL}/posts/${post_id}/${urlPostTitle}`,
+                });
+            }
         );
-
-        const urlPostTitle: string = post.title
-            .toLowerCase()
-            .split(" ")
-            .join("-");
-        connection.destroy();
-        return res.status(200).send({
-            post,
-            message: "Post created successfully!",
-            link: `${process.env.FRONTEND_URL}/posts/${post_id}/${urlPostTitle}`,
-        });
     } catch (error) {
         console.error(error);
     }
@@ -91,13 +95,15 @@ export async function deletePost(req, res) {
         const post: Post = req.body.post;
         const user_id: string = req.user.user_id;
 
-        const connection = await mysql.createConnection(config);
-        await connection.execute(
+        connection.connect();
+        connection.query(
             "DELETE FROM posts WHERE post_id = ? AND user_id = ?",
-            [post.post_id, user_id]
+            [post.post_id, user_id],
+            (err, results) => {
+                if (err) throw err;
+                return res.send({ message: "Post deleted successfully" });
+            }
         );
-        connection.destroy();
-        return res.send({ message: "Post deleted successfully" });
     } catch (error) {
         return res.json(error.message);
     }

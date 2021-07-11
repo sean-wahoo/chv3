@@ -10,7 +10,7 @@ import {
 import { createPost, deletePost, getPostById, getPosts } from "@routes/posts";
 import { friendMiddleware, protectedMiddleware } from "@utils/middleware";
 import * as dotenv from "dotenv";
-import * as cors from "cors";
+import cors = require("cors");
 import {
     getCommentsForPost,
     createComment,
@@ -39,7 +39,7 @@ import {
     getNotifications,
 } from "@routes/notifications";
 
-const address = ip?.address();
+const address = ip.address();
 
 dotenv.config();
 

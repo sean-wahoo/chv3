@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import axios from "axios";
-import Link from "next/link";
+
 import { GetServerSideProps } from "next";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
@@ -26,23 +26,18 @@ export default function Home(props: any) {
                     posted by {post.username}{" "}
                     {timeAgo.format(new Date(post.created_at))}
                 </h4>
-
                 <div className="flex flex-row">
-                    <Link href={`/post/${post.post_id}`}>
-                        <h4 className="cursor-pointer hover:underline font-medium mr-auto text-xl dark:text-white">
-                            {post.title}
-                        </h4>
-                    </Link>
+                    <h4 className="font-medium mr-auto text-xl dark:text-white">
+                        {post.title}
+                    </h4>
                     <h4 className="lg:text-md md:text-sm md:block hidden ml-auto dark:text-white">
                         posted by {post.username}{" "}
                         {timeAgo.format(new Date(post.created_at))}
                     </h4>
                 </div>
-                <Link href={`/post/${post.post_id}`}>
-                    <p className="cursor-pointer my-4 text-postBodyLight dark:text-postBodyDark">
-                        {post.content}
-                    </p>
-                </Link>
+                <p className="my-4 text-postBodyLight dark:text-postBodyDark">
+                    {post.content}
+                </p>
                 <p className="dark:text-white">
                     {post.num_likes} likes · {post.num_comments} comments
                 </p>
