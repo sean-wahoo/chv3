@@ -1,32 +1,28 @@
 import Reply from "@components/Reply";
+import { DetailedComment } from "@utils/interfaces";
 import axios from "axios";
+// import useSWR from "swr"
 import { GetServerSideProps } from "next";
 import { useEffect, useState } from "react";
 
 export default function Comment(props: any) {
     const comment_data = props.comment_data;
-    const [replies, setReplies] = useState<any>();
-    let replies_data;
 
-    const getReplies = async () => {
-        const fetchedReplies = await axios.get(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/getRepliesToComment`,
-            { params: { comment_id: comment_data.comment_id } }
+    const replies =
+        comment_data?.replies?.length !== 0 ? (
+            comment_data?.replies?.map((reply: DetailedComment) => {
+                return (
+                    <Reply
+                        parent_username={comment_data.username}
+                        comment_data={reply}
+                        key={reply.comment_id}
+                    />
+                );
+            })
+        ) : (
+            <></>
         );
-        console.log(comment_data.comment_id);
-        replies_data = fetchedReplies.data;
-        console.log(replies_data);
-    };
 
-    useEffect(() => {
-        getReplies();
-    }, []);
-
-    // if (comment_data.num_replies > 0) {
-    //     for (let i = 0; i < comment_data.num_replies; i++) {
-    //         replies.push(<Reply comment_data={comment_data} />);
-    //     }
-    // }
     return (
         <>
             <div

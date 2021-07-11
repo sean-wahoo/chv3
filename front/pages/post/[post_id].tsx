@@ -19,59 +19,6 @@ export default function Post(props: any) {
         return <Comment comment_data={comment} />;
     });
 
-    // const comments = props.comments.map((comment: DetailedComment) => {
-    //     props.replies.forEach((reply: any) => {
-
-    //     })
-    //     return (
-    //         <>
-    //             <div
-    //                 key={comment.comment_id}
-    //                 className="flex flex-col w-full my-4 bg-white dark:bg-postBlockDark"
-    //             >
-    //                 <div className="flex flex-row items-center dark:text-postBodyDark">
-    //                     {comment.username}
-    //                 </div>
-    //                 <p className="text-lg dark:text-postBodyDark">
-    //                     {props.post_data.content}
-    //                 </p>
-    //                 <div className="flex flex-row items-center dark:text-postBodyDark lg:text-xl text-lg mt-1">
-    //                     <svg
-    //                         xmlns="http://www.w3.org/2000/svg"
-    //                         className="lg:h-6 lg:w-6 h-5 w-5 mr-2"
-    //                         fill="none"
-    //                         viewBox="0 0 24 24"
-    //                         stroke="currentColor"
-    //                     >
-    //                         <path
-    //                             strokeLinecap="round"
-    //                             strokeLinejoin="round"
-    //                             strokeWidth={2}
-    //                             d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-    //                         />
-    //                     </svg>{" "}
-    //                     {comment.num_replies}
-    //                     <svg
-    //                         xmlns="http://www.w3.org/2000/svg"
-    //                         className="lg:h-6 lg:w-6 h-5 w-5 mx-2 ml-4"
-    //                         fill="none"
-    //                         viewBox="0 0 24 24"
-    //                         stroke="currentColor"
-    //                     >
-    //                         <path
-    //                             strokeLinecap="round"
-    //                             strokeLinejoin="round"
-    //                             strokeWidth={2}
-    //                             d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-    //                         />
-    //                     </svg>{" "}
-    //                     {comment.num_likes}
-    //                 </div>
-    //             </div>
-    //         </>
-    //     );
-    // });
-
     return (
         <div className="w-full min-h-screen bg-pageBgLight dark:bg-pageBgDark flex flex-col font-work-sans font-normal">
             <Navbar user_data={props.auth.user} />
@@ -121,7 +68,7 @@ export default function Post(props: any) {
                         </div>
                     </div>
                     <div className="xl:col-span-1 xl:block hidden bg-white w-full dark:bg-postBlockDark md:border md:rounded-none rounded-lg border-lightBorder dark:border-black p-4 "></div>
-                    <div className="xl:col-span-2 col-span-3 bg-white w-full dark:bg-postBlockDark md:border md:rounded-none rounded-lg border-lightBorder dark:border-black p-4 ">
+                    <div className="xl:col-span-2 col-span-3 bg-white w-full dark:bg-postBlockDark md:border md:rounded-none rounded-lg border-lightBorder dark:border-black p-4 px-6">
                         {comments}
                     </div>
                 </div>
@@ -148,7 +95,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             }
         );
 
-        console.log(comments.data);
         return {
             props: {
                 post_data: post_data.data,
