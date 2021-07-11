@@ -24,7 +24,6 @@
     "react-dom": "17.0.2",
     "react-google-login": "^5.2.2",
     "react-responsive": "^8.2.0",
-    "swr": "^0.5.6",
     "ts-jest": "^27.0.3",
     "universal-cookie": "^4.0.4"
   },
